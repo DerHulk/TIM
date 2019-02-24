@@ -1,0 +1,11 @@
+{  
+  "extends": "./node_modules/@fitbit/sdk/sdk-tsconfig.json",
+  "compilerOptions": {    
+    "allowJs": true,
+    "types": null, /* Or add 'fitbit-sdk-typed' to the array */
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/fitbit-sdk-typed"
+    ],    
+  }  
+}
