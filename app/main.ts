@@ -1,9 +1,10 @@
 import { me } from "device";
 import * as document from "document";
+import { bindRecord } from "./recordBinder";
+import { RecordController } from './recordController';
 
 let myList = <any> document.getElementById("my-list");   
 myList.length = 100;
-
 
 export function runMyApp(){
                          
