@@ -36,6 +36,7 @@ class EventEmitter implements IEventEmitter {
         if (theHandlers) {
             for (var i = 0; i < theHandlers.length; i += 1) {
                 theHandlers[i](args);
+                
             }
         }
     }

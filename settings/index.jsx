@@ -4,27 +4,32 @@ function settingsComponent(props) {
       <Section
         title={
           <Text bold align="center">
-            Time is Money and money is Time 
+            Time is Money and money is Time
             Settings
           </Text>
         }
       >
-      <Toggle
+        <TextInput
+          label="ServerUrl"
+          settingsKey="ServerUrl"
+        />
+
+        <Toggle
           settingsKey="toggle"
           label="Toggle Switch"
         />
         <ColorSelect
           settingsKey="color"
           colors={[
-            {color: 'tomato'},
-            {color: 'sandybrown'},
-            {color: 'gold'},
-            {color: 'aquamarine'},
-            {color: 'deepskyblue'},
-            {color: 'plum'}
+            { color: 'tomato' },
+            { color: 'sandybrown' },
+            { color: 'gold' },
+            { color: 'aquamarine' },
+            { color: 'deepskyblue' },
+            { color: 'plum' }
           ]}
         />
-        </Section>
+      </Section>
     </Page>
   );
 }

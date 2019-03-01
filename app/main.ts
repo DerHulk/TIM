@@ -6,6 +6,7 @@ import { RecordController } from './recordController';
 let myList = <any> document.getElementById("my-list");   
 myList.length = 100;
 
+
 export function runMyApp(){
                          
     myList.delegate = {
