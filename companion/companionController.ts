@@ -18,9 +18,9 @@ export class CompanionController {
         }).then(function (arrayBuffer) {
             //console.log("Got JSON response from server:" + JSON.stringify(json));
 
-            outbox.enqueue("task", arrayBuffer)
-                .then((ft) => {
-                    console.log(`Transfer of $‌{ft.name} successfully queued.`);
+            outbox.enqueue("task.json", arrayBuffer)
+                .then((ft:any) => {
+                    console.log('Transfer of ' + ft.name  + ' successfully queued.');
                 })
                 .catch((error) => {
                     console.log(`Failed to queue $‌{filename}: $‌{error}`);
