@@ -1,29 +1,18 @@
 import { runMyApp } from "./main";
-import {  RecordController } from "./recordController";
-import {  ApplicationContext } from "./applicationContext";
+import { RecordController } from "./recordController";
+import { ApplicationContext } from "./applicationContext";
 import { bindRecord } from './recordBinder';
 import { inbox } from "file-transfer";
 import * as fs from "fs";
+import { TaskController } from './taskController';
+import { app } from 'peer';
+import { bindTask } from './taskBinder';
 
 
 runMyApp();
 let appContext = new ApplicationContext();
 let recordController = new RecordController(appContext);
+let taskController = new TaskController();
 
-bindRecord( appContext, recordController);
-
-
-
-function processAllFiles() {
-   let fileName;
-   while (fileName = inbox.nextFile()) {
-     // process each file
-     console.log("Received: " + fileName);
-         
-     let json_object  = fs.readFileSync(fileName, "json");
-     console.log("JSON guid: " + json_object[2].id);
-
-   }
-}
-inbox.addEventListener("newfile", processAllFiles);
-processAllFiles();
+bindRecord(appContext, recordController);
+bindTask(appContext, taskController);
