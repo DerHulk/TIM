@@ -1,4 +1,3 @@
-import { runMyApp } from "./main";
 import { RecordController } from "./recordController";
 import { ApplicationContext } from "./applicationContext";
 import { bindRecord } from './recordBinder';
@@ -9,10 +8,9 @@ import { app } from 'peer';
 import { bindTask } from './taskBinder';
 
 
-runMyApp();
 let appContext = new ApplicationContext();
 let recordController = new RecordController(appContext);
-let taskController = new TaskController();
+let taskController = new TaskController(appContext);
 
 bindRecord(appContext, recordController);
 bindTask(appContext, taskController);

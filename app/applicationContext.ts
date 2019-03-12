@@ -45,6 +45,8 @@ class EventEmitter implements IEventEmitter {
 export class ApplicationContext {
 
     public static OnUpdateElapseTime: string = "1d9ef731-b016-4178-baf4-2ebe2c728260";
+    public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";    
+    public static OnTaskListChanged: string = "cc040a5a-2e14-4aff-af23-51d8494045f5";
 
     Emitter: IEventEmitter;
 
