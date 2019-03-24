@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import { TaskEntity } from '../common/taskEntity';
 
 interface IEventEmitter {
     // maintain a list of listeners
@@ -36,7 +38,7 @@ class EventEmitter implements IEventEmitter {
         if (theHandlers) {
             for (var i = 0; i < theHandlers.length; i += 1) {
                 theHandlers[i](args);
-                
+
             }
         }
     }
@@ -45,7 +47,7 @@ class EventEmitter implements IEventEmitter {
 export class ApplicationContext {
 
     public static OnUpdateElapseTime: string = "1d9ef731-b016-4178-baf4-2ebe2c728260";
-    public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";    
+    public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";
     public static OnTaskListChanged: string = "cc040a5a-2e14-4aff-af23-51d8494045f5";
 
     Emitter: IEventEmitter;
@@ -53,6 +55,20 @@ export class ApplicationContext {
     constructor() {
         this.Emitter = new EventEmitter();
 
+    }
+
+    public WriteTaskFile(toWrite: Array<TaskEntity>) {
+        fs.writeFileSync("task.txt", toWrite, "json");
+    }
+
+    public ReadTaskFile(): Array<TaskEntity> {
+
+        try 
+        {
+            return fs.readFileSync("task.txt", "json");
+        } catch (error) {
+            return new Array<TaskEntity>();
+        }
     }
 
 }

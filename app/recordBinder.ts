@@ -13,6 +13,8 @@ export function bindRecord(appContext: ApplicationContext,
   display.onchange = (evt) => {
     if (display.on)
       controller.update();
+    //else
+    //write/save file.
   };
 
   let playButton = document.getElementById("playButton");

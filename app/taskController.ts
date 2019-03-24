@@ -6,27 +6,14 @@ export class TaskController {
 
     constructor(private appContext: ApplicationContext) {
 
-        appContext.Emitter.add(ApplicationContext.OnSyncTasks, (x: Array<TaskEntity>) => {
+        //load local if exist.
+        var current = this.appContext.ReadTaskFile();
+        this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
 
-            //test mix it.
-            var current = this.getLocalTasks();
-            
-            x.forEach(item=> current.push(item));
-            this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
-
+        //event
+        appContext.Emitter.add(ApplicationContext.OnSyncTasks, (x: Array<TaskEntity>) => {                               
+            this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, x);
+            this.appContext.WriteTaskFile(x);
         });
-    }
-
-    public getLocalTasks(): Array<TaskEntity>{
-        var result = new Array<TaskEntity>();
-        var t1 = new TaskEntity();
-        var t2 = new TaskEntity();
-
-        t1.titel = "test 123";
-        t2.titel = "Hallo World!";
-
-        result.push(t1, t2);
-
-        return result;
     }
 }

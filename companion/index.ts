@@ -14,5 +14,5 @@ if (me.launchReasons.peerAppLaunched || me.launchReasons.wokenUp) {
     controler.syncTasks();
 }
 else {
-    me.yield()
+    me.yield();
 }

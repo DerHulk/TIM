@@ -13,8 +13,6 @@ export function bindTask(appContext: ApplicationContext, controller: TaskControl
 
     appContext.Emitter.add(ApplicationContext.OnTaskListChanged,
         (tasks: Array<TaskEntity>) => bindTaskList(tasks));
-
-    bindTaskList(controller.getLocalTasks());
 }
 
 function bindTaskList(tasks: TaskEntity[]) {
