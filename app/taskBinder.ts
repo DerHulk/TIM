@@ -5,6 +5,8 @@ import * as fs from "fs";
 import { AnyARecord } from 'dns';
 import { TaskEntity } from '../common/taskEntity';
 import * as document from "document";
+import { ArrayBufferHelper } from '../common/arrayBufferHelper';
+import { TaskStatusTuple } from '../common/taskStatusTuple';
 
 export function bindTask(appContext: ApplicationContext, controller: TaskController) {
 
@@ -32,24 +34,16 @@ function bindTaskList(tasks: TaskEntity[]) {
     };
 }
 
-function processNewFiles(appContext: ApplicationContext) {
-    let fileName;
+async function processNewFiles(appContext: ApplicationContext) {
+    
+    let fileName;    
     while (fileName = inbox.nextFile()) {
         // process each file
         console.log("Received: " + fileName);
 
-        let json_object = fs.readFileSync(fileName, "json");
-        console.log("JSON guid: " + json_object[2].id);
+        let buffer = <ArrayBuffer> fs.readFileSync(fileName);           
+        let json_object = ArrayBufferHelper.BufferToObject<Array<TaskStatusTuple>>(buffer);        
 
-        var result = new Array<TaskEntity>();
-
-        (<Array<any>>json_object).forEach(item => {
-            var task = new TaskEntity();
-            task.id = item.id;
-            task.titel = item.description;
-
-            result.push(task);
-        });
-        appContext.Emitter.emit(ApplicationContext.OnSyncTasks, result);
+        appContext.Emitter.emit(ApplicationContext.OnSyncTasks, json_object);
     }
 }

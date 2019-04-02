@@ -63,9 +63,20 @@ export class ApplicationContext {
 
     public ReadTaskFile(): Array<TaskEntity> {
 
-        try 
-        {
+        try {
             return fs.readFileSync("task.txt", "json");
+        } catch (error) {
+            return new Array<TaskEntity>();
+        }
+    }
+
+    public WriteRecord(id: number, time: number) {
+        fs.writeFileSync( id + ".txt", time, "json");
+    }
+
+    public ReadRecord(id: number) {
+        try {
+            return fs.readFileSync( id + ".txt", "json");
         } catch (error) {
             return new Array<TaskEntity>();
         }
