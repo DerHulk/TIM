@@ -3,11 +3,7 @@ import { TaskStatus } from './enums';
 
 export class TaskStatusTuple {
 
-    constructor(task?: TaskEntity, status?: TaskStatus) {
-        this.task = task;
-        this.status = status;
+    constructor(public task?: TaskEntity, public status?: TaskStatus) {        
     }
-
-    task: TaskEntity;
-    status: TaskStatus;
+   
 }

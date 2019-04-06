@@ -2,47 +2,60 @@ import { TaskEntity } from '../common/taskEntity';
 import { TaskSource, TaskStatus } from '../common/enums';
 import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
+import { X_OK } from 'constants';
 
 export class TaskManager {
 
-    public Convert(source:TaskSource, serverResponse:ArrayBuffer, existing:Array<TaskEntity>) : Array<TaskStatusTuple> {
+    public Convert(source: TaskSource, serverResponse: ArrayBuffer, existing: Array<TaskEntity>): Array<TaskStatusTuple> {
 
-        var serverTasks :Array<TaskEntity>;
+        var serverTasks: Array<TaskEntity>;
 
-        if(!existing)
+        if (!existing)
             existing = new Array<TaskEntity>();
 
-        if(source === TaskSource.Unkown){
-            serverTasks = ArrayBufferHelper.BufferToObject<Array<TaskEntity>>(serverResponse);            
-        }   
+        if (source === TaskSource.Unkown) {
+            var debugObj = ArrayBufferHelper.BufferToObject<Array<any>>(serverResponse);
+            serverTasks = debugObj.map(x => new TaskEntity(x.id, x.description));
+        }
         else
             throw Error("Not Implementated");
 
         var result = new Array<TaskStatusTuple>();
 
-        serverTasks.forEach(s=> {                        
-            if(!existing.some(x=> x.id == s.id))
-                result.push(new TaskStatusTuple(s, TaskStatus.New));
-        });
+        existing = this.WhereIsValid(existing);
+        serverTasks = this.WhereIsValid(serverTasks);
 
-        existing.forEach(x=> {            
-                        
-            if(serverTasks.some(f=> f.id == x.id)){
-                
-                if(serverTasks.some(f=> f.id == x.id && f.titel == x.titel)){
-                    result.push(new TaskStatusTuple(x, TaskStatus.None ));
+        serverTasks.forEach(s => {
+            if (!existing.some(x => x.id === s.id))
+                result.push(new TaskStatusTuple(s, TaskStatus.New));
+            else {
+                if (existing.some(f => f.id === s.id && f.titel === s.titel)) {
+                    result.push(new TaskStatusTuple(s, TaskStatus.None));
                 }
                 else {
-                    result.push(new TaskStatusTuple(x, TaskStatus.Updated));
+                    console.log("[TaskManager].Update:" + s.titel + " id " + s.id);
+                    result.push(new TaskStatusTuple(s, TaskStatus.Updated));
                 }
-
             }
-            else{
-                result.push(new TaskStatusTuple(x, TaskStatus.Deleted ));
-            }
+        });
 
+        existing.forEach(x => {
+            console.log("[TaskManager].Existing:" + x.titel + " id " + x.id);
+
+            if (!serverTasks.some(f => f.id === x.id)) {
+                console.log("[TaskManager].Delete:" + x.titel + " id " + x.id);
+                result.push(new TaskStatusTuple(x, TaskStatus.Deleted));
+            }
+        });
+
+        result.forEach(x => {
+            console.log("[TaskManager].Convert result status:" + x.status + " id " + x.task.id + "titel " + x.task.titel);
         });
 
         return result;
-    }       
+    }
+
+    private  WhereIsValid(source: Array<TaskEntity>):Array<TaskEntity>{
+        return source.filter(x=> x.id && x.titel);
+    }
 }

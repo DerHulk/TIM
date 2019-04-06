@@ -10,14 +10,18 @@ import { TaskStatusTuple } from '../common/taskStatusTuple';
 
 export function bindTask(appContext: ApplicationContext, controller: TaskController) {
 
-    inbox.addEventListener("newfile", () => processNewFiles(appContext));
-    processNewFiles(appContext);
-
     appContext.Emitter.add(ApplicationContext.OnTaskListChanged,
         (tasks: Array<TaskEntity>) => bindTaskList(tasks));
+
+    controller.loadLocal();
+    inbox.addEventListener("newfile", () => processNewFiles(appContext));
+    processNewFiles(appContext);
 }
 
 function bindTaskList(tasks: TaskEntity[]) {
+
+    console.log("[bindTaskList] Array count: " + tasks.length);
+
     let myList = <any>document.getElementById("my-list");
     myList.length = tasks.length;
     myList.delegate = {
@@ -35,15 +39,15 @@ function bindTaskList(tasks: TaskEntity[]) {
 }
 
 async function processNewFiles(appContext: ApplicationContext) {
-    
-    let fileName;    
+
+    let fileName;
     while (fileName = inbox.nextFile()) {
         // process each file
         console.log("Received: " + fileName);
 
-        let buffer = <ArrayBuffer> fs.readFileSync(fileName);           
-        let json_object = ArrayBufferHelper.BufferToObject<Array<TaskStatusTuple>>(buffer);        
-
+        let json_object = <Array<TaskStatusTuple>>fs.readFileSync(fileName, 'json');
+        console.log("[processNewFiles] Array count: " + json_object.length);
+              
         appContext.Emitter.emit(ApplicationContext.OnSyncTasks, json_object);
     }
 }

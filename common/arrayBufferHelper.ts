@@ -7,9 +7,10 @@ export class ArrayBufferHelper {
     }
 
     public static BufferToObject<T>(buf:ArrayBuffer){
-        var json = this.BufferToString(buf);
-
-        return <T>JSON.parse(json);
+        var jsonString = this.BufferToString(buf) ; 
+        var result = <T>JSON.parse(jsonString);                  
+                
+        return result;
     }
 
     public static StringToBuffer(str:string) :ArrayBuffer {
@@ -21,7 +22,7 @@ export class ArrayBufferHelper {
         return buf;
       }      
 
-      public static BufferToString(buf:ArrayBuffer) {
+      public static BufferToString(buf:ArrayBuffer):string {
         return String.fromCharCode.apply(null, new Uint8Array(buf));
       }      
 }

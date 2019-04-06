@@ -6,7 +6,7 @@ import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { TaskEntity } from '../common/taskEntity';
 import { localStorage } from "local-storage";
 import { TaskManager } from './taskManager';
-import { TaskSource } from '../common/enums';
+import { TaskSource, TaskStatus } from '../common/enums';
 
 export class CompanionController {
 
@@ -35,14 +35,12 @@ export class CompanionController {
             var currentTasksAsJson = localStorage.getItem(localKey);
             var existing = JSON.parse(currentTasksAsJson);
             var tupels = manager.Convert( TaskSource.Unkown, arrayBuffer, existing)  ;
-            var loaclTask = tupels.map(x=> x.task);
-
+            var loaclTask = tupels.map(x=> x.task);            
             localStorage.setItem(localKey, JSON.stringify(loaclTask));            
-                                    
+            
             var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(tupels);
-
-            console.log("returnValue:" + appArrayBuffer.byteLength);
-
+            console.log('tupels:' + tupels.length);
+                    
             outbox.enqueue("task.json", appArrayBuffer)
                 .then((ft: any) => {
                     console.log('Transfer of ' + ft.name + ' successfully queued.');
