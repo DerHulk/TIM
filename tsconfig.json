@@ -7,5 +7,7 @@
       "node_modules/@types",
       "node_modules/fitbit-sdk-typed"
     ],    
+    //only for testing.
+    "module": "commonjs",
   }  
 }

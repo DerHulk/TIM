@@ -3,26 +3,27 @@ import { TaskSource, TaskStatus } from '../common/enums';
 import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { X_OK } from 'constants';
+import { UrlContext } from './urlContext';
+import { requestContext } from './requestContext';
 
 export class TaskManager {
 
-    public Convert(source: TaskSource, serverResponse: ArrayBuffer, existing: Array<TaskEntity>): Array<TaskStatusTuple> {
+    public Convert(context: UrlContext, request: requestContext): Array<TaskStatusTuple> {
+
+        if (!context)
+            throw Error("context is null");
 
         var serverTasks: Array<TaskEntity>;
 
-        if (!existing)
-            existing = new Array<TaskEntity>();
-
-        if (source === TaskSource.Unkown) {
-            var debugObj = ArrayBufferHelper.BufferToObject<Array<any>>(serverResponse);
+        if (request.source === TaskSource.Unkown) {
+            var debugObj = ArrayBufferHelper.BufferToObject<Array<any>>(request.data);
             serverTasks = debugObj.map(x => new TaskEntity(x.id, x.description));
         }
         else
             throw Error("Not Implementated");
 
         var result = new Array<TaskStatusTuple>();
-
-        existing = this.WhereIsValid(existing);
+        var existing = this.WhereIsValid(context.tasks);
         serverTasks = this.WhereIsValid(serverTasks);
 
         serverTasks.forEach(s => {
@@ -48,6 +49,9 @@ export class TaskManager {
             }
         });
 
+        if (context.url !== request.url)
+            existing.forEach(x => result.push(new TaskStatusTuple(x, TaskStatus.Deleted)));
+
         result.forEach(x => {
             console.log("[TaskManager].Convert result status:" + x.status + " id " + x.task.id + "titel " + x.task.titel);
         });
@@ -55,7 +59,7 @@ export class TaskManager {
         return result;
     }
 
-    private  WhereIsValid(source: Array<TaskEntity>):Array<TaskEntity>{
-        return source.filter(x=> x.id && x.titel);
+    private WhereIsValid(source: Array<TaskEntity>): Array<TaskEntity> {
+        return source.filter(x => x.id && x.titel);
     }
 }

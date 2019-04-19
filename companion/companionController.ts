@@ -7,6 +7,8 @@ import { TaskEntity } from '../common/taskEntity';
 import { localStorage } from "local-storage";
 import { TaskManager } from './taskManager';
 import { TaskSource, TaskStatus } from '../common/enums';
+import { UrlContext } from './urlContext';
+import { requestContext } from './requestContext';
 
 export class CompanionController {
 
@@ -16,6 +18,7 @@ export class CompanionController {
        
     public syncTasks() {
 
+        var that = this;
         var serviceUrl = JSON.parse(settingsStorage.getItem("ServerUrl"));
 
         if (!serviceUrl)
@@ -31,14 +34,14 @@ export class CompanionController {
         }).then(function (arrayBuffer:ArrayBuffer) {
 
             var manager = new TaskManager();
-            var localKey = encodeURI(url);
-            var currentTasksAsJson = localStorage.getItem(localKey);
-            var existing = JSON.parse(currentTasksAsJson);
-            var tupels = manager.Convert( TaskSource.Unkown, arrayBuffer, existing)  ;
-            var loaclTask = tupels.map(x=> x.task);            
-            localStorage.setItem(localKey, JSON.stringify(loaclTask));            
-            
+            var context = that.loadContext(url);
+            var request = new requestContext(url, TaskSource.Unkown, arrayBuffer);
+            var tupels = manager.Convert( context, request)  ;
             var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(tupels);
+
+            context.tasks= tupels.map(x=> x.task);
+            that.saveContext(context);
+            
             console.log('tupels:' + tupels.length);
                     
             outbox.enqueue("task.json", appArrayBuffer)
@@ -53,4 +56,24 @@ export class CompanionController {
             console.log("fetched faild:" + error);
         });
     }
+
+    public loadContext(url: string) :UrlContext {
+        var raw = localStorage.getItem('UrlContext');
+
+        if(raw){
+            return JSON.parse(raw);
+        }
+
+        var result = new UrlContext();
+        result.url = url;
+        result.tasks = [];
+        return result;
+    }
+
+    public saveContext(urlContext:UrlContext){
+        var raw = JSON.stringify(urlContext);
+        localStorage.setItem('UrlContext', raw);
+
+    }
+
 }

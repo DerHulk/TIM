@@ -11,11 +11,15 @@ import { TaskStatusTuple } from '../common/taskStatusTuple';
 export function bindTask(appContext: ApplicationContext, controller: TaskController) {
 
     appContext.Emitter.add(ApplicationContext.OnTaskListChanged,
-        (tasks: Array<TaskEntity>) => bindTaskList(tasks));
+        (tasks: Array<TaskEntity>) => {
+            bindTaskList(tasks)
+            bindItemClick(controller);
+        });
 
     controller.loadLocal();
     inbox.addEventListener("newfile", () => processNewFiles(appContext));
     processNewFiles(appContext);
+
 }
 
 function bindTaskList(tasks: TaskEntity[]) {
@@ -36,6 +40,18 @@ function bindTaskList(tasks: TaskEntity[]) {
             tile.getElementById("text").text = info.value;
         }
     };
+}
+
+function bindItemClick(controller: TaskController){
+    let list = document.getElementById("my-list");
+    let items = list.getElementsByClassName("tile-list-item");
+
+    items.forEach((element, index) => {
+        let touch = element.getElementById("touch-me");
+        touch.onclick = (evt) => {
+            controller.selectByIndex(index);
+        }
+    });
 }
 
 async function processNewFiles(appContext: ApplicationContext) {

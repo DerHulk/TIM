@@ -3,6 +3,7 @@ import { display } from "display";
 import { RecordController } from "./recordController"
 import * as document from "document";
 import { ApplicationContext } from './applicationContext';
+import { TaskEntity } from '../common/taskEntity';
 
 export function bindRecord(appContext: ApplicationContext,
   controller: RecordController) {
@@ -33,5 +34,12 @@ export function bindRecord(appContext: ApplicationContext,
       let body = mixedtext.getElementById("copy");
       body.text = "This is the body text";
 
+    });
+
+    appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {
+      let mixedtext = document.getElementById("mixedtext");
+      let body = mixedtext.getElementById("copy");
+
+      body.text = task.titel;      
     });
 }

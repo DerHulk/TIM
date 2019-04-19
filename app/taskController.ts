@@ -55,4 +55,9 @@ export class TaskController {
         this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
         this.appContext.WriteTaskFile(current);
     }
+
+    public selectByIndex(index:number){
+        var current = this.appContext.ReadTaskFile();        
+        this.appContext.Emitter.emit(ApplicationContext.OnTaskSelected, current[index] );
+    }
 }
