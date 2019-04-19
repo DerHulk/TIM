@@ -28,12 +28,7 @@ export function bindRecord(appContext: ApplicationContext,
   appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
     (value:string) => {
       let mixedtext = document.getElementById("mixedtext");
-      mixedtext.text = value;
-
-      //ignore for the moment.
-      let body = mixedtext.getElementById("copy");
-      body.text = "This is the body text";
-
+      mixedtext.text = value;     
     });
 
     appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {

@@ -6,6 +6,8 @@ import { TaskStatus } from '../common/enums';
 
 export class TaskController {
 
+    private  loadedItems: Array<TaskEntity>;
+
     constructor(private appContext: ApplicationContext) {
 
         //event
@@ -24,7 +26,6 @@ export class TaskController {
         console.log("[TaskController]updateLocal: was called with:" + tupels.length);
 
         var current = this.appContext.ReadTaskFile();
-
         var toDelete = tupels.filter(x => x.status === TaskStatus.Deleted).map(x => x.task);
         var toUpdate = tupels.filter(x => x.status === TaskStatus.Updated).map(x => x.task);
         var toAdd = tupels.filter(x => x.status === TaskStatus.New).map(x => x.task);
@@ -54,10 +55,11 @@ export class TaskController {
 
         this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
         this.appContext.WriteTaskFile(current);
+
+        this.loadedItems = current;
     }
 
-    public selectByIndex(index:number){
-        var current = this.appContext.ReadTaskFile();        
-        this.appContext.Emitter.emit(ApplicationContext.OnTaskSelected, current[index] );
+    public selectByIndex(index:number){          
+        this.appContext.Emitter.emit(ApplicationContext.OnTaskSelected, this.loadedItems[index] );
     }
 }
