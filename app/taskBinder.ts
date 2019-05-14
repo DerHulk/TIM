@@ -43,6 +43,7 @@ function bindTaskList(tasks: TaskEntity[]) {
 }
 
 function bindItemClick(controller: TaskController){
+    let container = document.getElementById("container");
     let list = document.getElementById("my-list");
     let items = list.getElementsByClassName("tile-list-item");
 
@@ -50,6 +51,7 @@ function bindItemClick(controller: TaskController){
         let touch = element.getElementById("touch-me");
         touch.onclick = (evt) => {
             controller.selectByIndex(index);
+            container.value = 0;//back to time slide
         }
     });
 }
