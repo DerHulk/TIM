@@ -22,15 +22,20 @@
       </use>
 
     <!-- TOP RIGHT -->
-      <use id="pauseButton" href="#combo-button-upper-right" fill="fb-red">
-        <set href="combo-button-icon" attributeName="href" to="pause.png"/>
-        <set href="combo-button-icon-press" attributeName="href" to="pause_press.png"/>
+      <use id="finishButton" href="#combo-button-upper-right" fill="fb-red">
+        <set href="combo-button-icon" attributeName="href" to="flag.png"/>
+        <set href="combo-button-icon-press" attributeName="href" to="flag_press.png"/>
         <set href="combo-button-stroke" attributeName="display" to="inline"/>
       </use>
       <!-- BOTTOM RIGHT -->
       <use id="playButton" href="#combo-button-lower-right" fill="fb-peach">
         <set href="combo-button-icon" attributeName="href" to="play.png"/>
         <set href="combo-button-icon-press" attributeName="href" to="play_press.png"/>
+        <set href="combo-button-stroke" attributeName="display" to="inline"/>
+      </use>
+      <use id="pauseButton" href="#combo-button-lower-right" fill="fb-green">
+         <set href="combo-button-icon" attributeName="href" to="pause.png"/>
+        <set href="combo-button-icon-press" attributeName="href" to="pause_press.png"/>
         <set href="combo-button-stroke" attributeName="display" to="inline"/>
       </use>
 

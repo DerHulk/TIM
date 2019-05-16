@@ -21,9 +21,20 @@ export function bindRecord(appContext: ApplicationContext,
 
   let playButton = document.getElementById("playButton");
   let pauseButton = document.getElementById("pauseButton");
+  let finishButton = document.getElementById("finishButton");
 
-  playButton.onactivate = (evt) => controller.start();
-  pauseButton.onactivate = (evt) => controller.pause();
+  (<any>pauseButton).style.display = "none";
+
+  playButton.onactivate = (evt) => {
+    controller.start();
+    (<any>playButton).style.display = "none";
+    (<any>finishButton).style.display = "inline";
+  };
+  pauseButton.onactivate = (evt) => {
+    controller.pause()
+  };
+  
+  
 
   appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
     (value:string) => {
