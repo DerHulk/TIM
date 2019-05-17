@@ -19,9 +19,21 @@ export function bindRecord(appContext: ApplicationContext,
     
   };
 
+  let container = document.getElementById("container");
   let playButton = document.getElementById("playButton");
   let pauseButton = document.getElementById("pauseButton");
   let finishButton = document.getElementById("finishButton");
+  let time = document.getElementById("mixedtext");
+  let text = time.getElementById("copy");
+
+  if(!controller.hasTask()){
+    let container = document.getElementById("container");
+    container.value = ApplicationContext.TaskListViewIndex;
+    (<any>playButton).style.display = "none";
+    (<any>finishButton).style.display = "none";
+    text.text = "Select a task from list";
+    time.text = "Please";
+  }
 
   (<any>pauseButton).style.display = "none";
 
@@ -35,17 +47,21 @@ export function bindRecord(appContext: ApplicationContext,
     (<any>pauseButton).style.display = "none";
     (<any>playButton).style.display = "inline";
   };
-  
+
   appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
-    (value:string) => {
-      let mixedtext = document.getElementById("mixedtext");
-      mixedtext.text = value;     
+    (value:string) => {      
+      time.text = value;     
     });
 
-    appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {
-      let mixedtext = document.getElementById("mixedtext");
-      let body = mixedtext.getElementById("copy");
-
-      body.text = task.titel;      
+  appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {
+      
+      text.text = task.titel;  
+      
+      if(controller.hasTask()){        
+        container.value = ApplicationContext.MainViewIndex;
+        (<any>playButton).style.display = "inline";
+        (<any>finishButton).style.display = "inline";
+      }
+      
     });
 }

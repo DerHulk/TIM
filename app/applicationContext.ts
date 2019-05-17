@@ -50,6 +50,9 @@ export class ApplicationContext {
     public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";
     public static OnTaskListChanged: string = "cc040a5a-2e14-4aff-af23-51d8494045f5";
     public static OnTaskSelected: string = "0a115001-573f-416c-a71d-cc60b990be2d";
+    
+    public static MainViewIndex = 0;
+    public static TaskListViewIndex = 1;
 
     Emitter: IEventEmitter;
 

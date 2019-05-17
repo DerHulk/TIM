@@ -65,6 +65,10 @@ export class RecordController {
         console.log("Paused." + this.toDebug());
     }
 
+    public hasTask():boolean{
+        return this.currentTask ? true : false;
+    }
+
     private calculateElapsedTime(): number {
         return (new Date().getTime() - this.startTime.getTime());
     }

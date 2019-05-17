@@ -16,8 +16,8 @@
     <use id="item1" href="#panoramaview-item">
     
     <use id="mixedtext" href="#mixed-text-left-mid" height="100%" fill="fb-yellow">
-        <set href="#header/text" attributeName="text-buffer" to="00323min"/>
-        <set href="#copy/text" attributeName="text-buffer" to="This is the text to my task."/>
+        <set href="#header/text" attributeName="text-buffer" to="00000min"/>
+        <set href="#copy/text" attributeName="text-buffer" to="                                   "/>
     </use>
 
     <!-- TOP RIGHT -->

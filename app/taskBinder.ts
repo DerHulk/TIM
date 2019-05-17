@@ -50,8 +50,7 @@ function bindItemClick(controller: TaskController){
     items.forEach((element, index) => {
         let touch = element.getElementById("touch-me");
         touch.onclick = (evt) => {
-            controller.selectByIndex(index);
-            container.value = 0;//back to time slide
+            controller.selectByIndex(index);            
         }
     });
 }
