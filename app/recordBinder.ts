@@ -28,14 +28,14 @@ export function bindRecord(appContext: ApplicationContext,
   playButton.onactivate = (evt) => {
     controller.start();
     (<any>playButton).style.display = "none";
-    (<any>finishButton).style.display = "inline";
+    (<any>pauseButton).style.display = "inline";
   };
   pauseButton.onactivate = (evt) => {
-    controller.pause()
+    controller.pause();
+    (<any>pauseButton).style.display = "none";
+    (<any>playButton).style.display = "inline";
   };
   
-  
-
   appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
     (value:string) => {
       let mixedtext = document.getElementById("mixedtext");

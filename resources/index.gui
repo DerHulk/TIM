@@ -15,11 +15,10 @@
 
     <use id="item1" href="#panoramaview-item">
     
-    <use id="mixedtext" href="#mixed-text-left-top" height="100%" fill="fb-yellow">
+    <use id="mixedtext" href="#mixed-text-left-mid" height="100%" fill="fb-yellow">
         <set href="#header/text" attributeName="text-buffer" to="00323min"/>
-        <set href="#copy/text" attributeName="text-buffer"
-            to="This is the text to my task."/>
-      </use>
+        <set href="#copy/text" attributeName="text-buffer" to="This is the text to my task."/>
+    </use>
 
     <!-- TOP RIGHT -->
       <use id="finishButton" href="#combo-button-upper-right" fill="fb-red">
