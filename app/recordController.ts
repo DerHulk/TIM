@@ -98,9 +98,9 @@ export class RecordController {
         if(!task.timeInMs) {
             task.timeInMs = 0;           
         }
-            
-        var inMinutes = this.toMinutes(task.timeInMs);
+                    
         this.currentTask = task;        
+        var inMinutes = this.toMinutes(task.timeInMs);
 
         this.updateElaspedTime(inMinutes.toString(), RecordController.MinuteUnit);
     }

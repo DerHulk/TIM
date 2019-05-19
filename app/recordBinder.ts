@@ -27,7 +27,7 @@ export function bindRecord(appContext: ApplicationContext,
   let text = time.getElementById("copy");
 
   if(!controller.hasTask()){
-    let container = document.getElementById("container");
+   
     container.value = ApplicationContext.TaskListViewIndex;
     (<any>playButton).style.display = "none";
     (<any>finishButton).style.display = "none";
@@ -46,6 +46,13 @@ export function bindRecord(appContext: ApplicationContext,
     controller.pause();
     (<any>pauseButton).style.display = "none";
     (<any>playButton).style.display = "inline";
+  };
+
+  finishButton.onactivate = (evt) => {
+    controller.pause();
+    (<any>pauseButton).style.display = "none";
+    (<any>playButton).style.display = "inline";
+    container.value = ApplicationContext.TaskListViewIndex;
   };
 
   appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
