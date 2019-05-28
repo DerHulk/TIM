@@ -1,9 +1,7 @@
-import { TaskSource } from '../common/enums';
 
 export class requestContext {
 
 constructor(
-    public url?: string,
-    public source?: TaskSource,
+    public url?: string,    
     public data?: ArrayBuffer){}
 }

@@ -14,19 +14,13 @@ function settingsComponent(props) {
           settingsKey="ServerUrl"
         />
 
-        <Toggle
-          settingsKey="toggle"
-          label="Toggle Switch"
-        />
-        <ColorSelect
-          settingsKey="color"
-          colors={[
-            { color: 'tomato' },
-            { color: 'sandybrown' },
-            { color: 'gold' },
-            { color: 'aquamarine' },
-            { color: 'deepskyblue' },
-            { color: 'plum' }
+        <Select                
+          label={`Source`}
+          settingsKey="SourceTyp"
+          options={[
+            { name: "Azure DevOps Server" },
+            { name: "Git" },
+            { name: "Dropbox" },
           ]}
         />
       </Section>

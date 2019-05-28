@@ -1,5 +1,5 @@
 import { TaskEntity } from '../common/taskEntity';
-import { TaskSource, TaskStatus } from '../common/enums';
+import { TaskStatus } from '../common/enums';
 import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { X_OK } from 'constants';
@@ -13,15 +13,7 @@ export class TaskManager {
         if (!context)
             throw Error("context is null");
 
-        var serverTasks: Array<TaskEntity>;
-
-        if (request.source === TaskSource.Unkown) {
-            var debugObj = ArrayBufferHelper.BufferToObject<Array<any>>(request.data);
-            serverTasks = debugObj.map(x => new TaskEntity(x.id, x.description));
-        }
-        else
-            throw Error("Not Implementated");
-
+        var serverTasks = context.downloader.map(request);        
         var result = new Array<TaskStatusTuple>();
         var existing = this.WhereIsValid(context.tasks);
         serverTasks = this.WhereIsValid(serverTasks);

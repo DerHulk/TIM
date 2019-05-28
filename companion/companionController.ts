@@ -6,74 +6,86 @@ import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { TaskEntity } from '../common/taskEntity';
 import { localStorage } from "local-storage";
 import { TaskManager } from './taskManager';
-import { TaskSource, TaskStatus } from '../common/enums';
 import { UrlContext } from './urlContext';
 import { requestContext } from './requestContext';
+import { getDownStrategy as getDownloadStrategy, getUploadStrategy } from './strategyFactory';
 
 export class CompanionController {
 
     constructor() {
 
     }
-       
+
     public syncTasks() {
 
         var that = this;
-        var serviceUrl = JSON.parse(settingsStorage.getItem("ServerUrl"));
+        var urlRaw = JSON.parse(settingsStorage.getItem("ServerUrl"));
+        var sourceTypRaw = JSON.parse(settingsStorage.getItem("SourceTyp"))
 
-        if (!serviceUrl)
+        if (!urlRaw || !sourceTypRaw)
             return;
-        
-        var url = serviceUrl.name;
-        console.log("Url:" + url);
 
-        fetch(url).then(function (response) {   
-                        
-            return response.arrayBuffer();                                     
+        console.log("Url:" + urlRaw.name);
+        console.log("Source:" + sourceTypRaw.values[0].name);
 
-        }).then(function (arrayBuffer:ArrayBuffer) {
+        var url = urlRaw.name;
+        var sourceTyp = sourceTypRaw.values[0].name;
+        var context = that.loadContext(url);
 
-            var manager = new TaskManager();
-            var context = that.loadContext(url);
-            var request = new requestContext(url, TaskSource.Unkown, arrayBuffer);
-            var tupels = manager.Convert( context, request)  ;
+        context.downloader = getDownloadStrategy(sourceTyp);
+        context.uploader = getUploadStrategy(sourceTyp);
+
+        this.pullFromServerPushDevice(context);
+        //read inputbox and push to url
+    }
+
+    private pullFromServerPushDevice(context: UrlContext) {
+
+        context.downloader.download(context).then((function (arrayBuffer: ArrayBuffer) {
+
+            var request = new requestContext(context.url, arrayBuffer);
+            var tupels = context.taskManager.Convert(context, request);
             var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(tupels);
 
-            context.tasks= tupels.map(x=> x.task);
-            that.saveContext(context);
-            
+            context.tasks = tupels.map(x => x.task);
+            context.save();
+
             console.log('tupels:' + tupels.length);
-                    
-            outbox.enqueue("task.json", appArrayBuffer)
+            context.enqueue(appArrayBuffer);
+
+        })).catch(function (error) {
+            console.log("fetched faild:" + error);
+        });
+    }
+
+    public loadContext(url: string): UrlContext {
+        var raw = localStorage.getItem('UrlContext');
+        var result = new UrlContext();
+
+        if (raw) {
+            result = JSON.parse(raw);
+        }
+        else {
+            result.url = url;
+            result.tasks = [];
+        }
+
+        result.taskManager = new TaskManager();
+        result.save = () => {
+            var raw = JSON.stringify(result);
+            localStorage.setItem('UrlContext', raw);
+        };
+
+        result.enqueue = (arrayBuffer: ArrayBuffer) => {
+            outbox.enqueue("task.json", arrayBuffer)
                 .then((ft: any) => {
                     console.log('Transfer of ' + ft.name + ' successfully queued.');
                 })
                 .catch((error) => {
                     console.log(`Failed to queue $‌{filename}: $‌{error}`);
                 });
+        };
 
-        }).catch(function (error) {
-            console.log("fetched faild:" + error);
-        });
-    }
-
-    public loadContext(url: string) :UrlContext {
-        var raw = localStorage.getItem('UrlContext');
-
-        if(raw){
-            return JSON.parse(raw);
-        }
-
-        var result = new UrlContext();
-        result.url = url;
-        result.tasks = [];
         return result;
     }
-
-    public saveContext(urlContext:UrlContext){
-        var raw = JSON.stringify(urlContext);
-        localStorage.setItem('UrlContext', raw);
-
-    }
-
 }
