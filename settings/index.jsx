@@ -9,12 +9,8 @@ function settingsComponent(props) {
           </Text>
         }
       >
-        <TextInput
-          label="ServerUrl"
-          settingsKey="ServerUrl"
-        />
 
-        <Select                
+<Select                
           label={`Source`}
           settingsKey="SourceTyp"
           options={[
@@ -23,6 +19,22 @@ function settingsComponent(props) {
             { name: "Dropbox" },
           ]}
         />
+
+{ JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name === 'Dropbox' && 
+    <TextInput
+      label="Access-Token"
+      placeholder="Enter your Access-Token"
+      settingsKey="AccessToken"
+/>
+}
+
+{ JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name !== 'Dropbox' && 
+<TextInput
+          label="ServerUrl"
+          settingsKey="ServerUrl"
+        />
+}
+
       </Section>
     </Page>
   );
