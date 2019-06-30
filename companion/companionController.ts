@@ -1,5 +1,6 @@
 
 import { outbox } from "file-transfer";
+import { inbox } from "file-transfer";
 import { settingsStorage } from "settings";
 import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
@@ -36,6 +37,7 @@ export class CompanionController {
         context.uploader = getUploadStrategy(sourceTyp);
 
         this.pullFromServerPushToDevice(context);
+        this.receiveFromDevicePushToServer(context);
         //read inputbox and push to url
     }
 
@@ -56,6 +58,15 @@ export class CompanionController {
         })).catch(function (error) {
             console.log("fetched faild:" + error);
         });
+    }
+
+    private async receiveFromDevicePushToServer(context: UrlContext) {
+
+        let file;
+        while ((file = await inbox.pop())) {
+            var payload = await file.text();
+            console.log('file contents: ' + payload );
+        }
     }
 
     public loadContext(url: string): UrlContext {

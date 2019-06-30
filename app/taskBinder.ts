@@ -1,6 +1,7 @@
 import { ApplicationContext } from './applicationContext';
 import { TaskController } from './taskController';
 import { inbox } from "file-transfer";
+import { outbox } from "file-transfer";
 import * as fs from "fs";
 import { AnyARecord } from 'dns';
 import { TaskEntity } from '../common/taskEntity';
@@ -20,6 +21,12 @@ export function bindTask(appContext: ApplicationContext, controller: TaskControl
     inbox.addEventListener("newfile", () => processNewFiles(appContext));
     processNewFiles(appContext);
 
+    appContext.Emitter.add(ApplicationContext.OnTaskUpdated,
+        (task: TaskEntity) => {
+            console.log("[bindTask] send task: " + task.id + " to output.");
+            var buffer = ArrayBufferHelper.ObjectToBuffer(task);
+            outbox.enqueue(task.id.toString(), buffer );
+        });
 }
 
 function bindTaskList(tasks: TaskEntity[]) {

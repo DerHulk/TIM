@@ -50,6 +50,7 @@ export class ApplicationContext {
     public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";
     public static OnTaskListChanged: string = "cc040a5a-2e14-4aff-af23-51d8494045f5";
     public static OnTaskSelected: string = "0a115001-573f-416c-a71d-cc60b990be2d";
+    public static OnTaskUpdated: string = "b9a43190-1e2e-40fb-9ec1-4cce5d4da1ef";
     
     public static MainViewIndex = 0;
     public static TaskListViewIndex = 1;
@@ -59,6 +60,19 @@ export class ApplicationContext {
     constructor() {
         this.Emitter = new EventEmitter();
 
+    }
+
+    public UpdateTaskFile(toWrite: TaskEntity) {
+
+        console.log("[UpdateTaskFile] start..");
+        var list = this.ReadTaskFile();
+
+        list.filter(x=> x.id == toWrite.id).forEach(x=> {
+            toWrite.timeInMs = toWrite.timeInMs;
+        });
+
+        this.WriteTaskFile(list);
+        this.Emitter.emit(ApplicationContext.OnTaskUpdated, toWrite);
     }
 
     public WriteTaskFile(toWrite: Array<TaskEntity>) {
@@ -73,17 +87,4 @@ export class ApplicationContext {
             return new Array<TaskEntity>();
         }
     }
-
-    public WriteRecord(id: number, time: number) {
-        fs.writeFileSync( id + ".txt", time, "json");
-    }
-
-    public ReadRecord(id: number) {
-        try {
-            return fs.readFileSync( id + ".txt", "json");
-        } catch (error) {
-            return new Array<TaskEntity>();
-        }
-    }
-
 }

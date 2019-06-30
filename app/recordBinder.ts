@@ -49,7 +49,7 @@ export function bindRecord(appContext: ApplicationContext,
   };
 
   finishButton.onactivate = (evt) => {
-    controller.pause();
+    controller.finished();
     (<any>pauseButton).style.display = "none";
     (<any>playButton).style.display = "inline";
     container.value = ApplicationContext.TaskListViewIndex;

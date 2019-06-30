@@ -11,24 +11,24 @@ export class RecordController {
     private currentTask: TaskEntity;
     private startTime: Date;
     private isRunning: boolean;
-    private isSleeping: boolean;        
+    private isSleeping: boolean;
 
     private static MinuteUnit: string = "min";
 
     constructor(private appContext: ApplicationContext) {
 
         //read from storage.
-        this.isRunning = false;        
+        this.isRunning = false;
 
         this.updateElaspedTime("0", RecordController.MinuteUnit);
 
-        appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {
+        appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task: TaskEntity) => {
             this.applyItem(task);
-          });
+        });
     }
 
     public update() {
-    
+
         if (!this.isRunning || !this.currentTask)
             return;
 
@@ -43,7 +43,7 @@ export class RecordController {
 
     public start() {
 
-        if(!this.currentTask)
+        if (!this.currentTask)
             return;
 
         this.isRunning = true;
@@ -55,17 +55,26 @@ export class RecordController {
 
     public pause() {
 
-        if(!this.currentTask)
+        if (!this.currentTask)
             return;
 
         this.currentTask.timeInMs += this.calculateElapsedTime();
-        this.isRunning = false;        
+        this.isRunning = false;
 
         this.update();
         console.log("Paused." + this.toDebug());
     }
 
-    public hasTask():boolean{
+    public finished() {
+
+        if (!this.currentTask)
+            return;
+
+        this.pause();
+        this.appContext.UpdateTaskFile(this.currentTask);
+    }
+
+    public hasTask(): boolean {
         return this.currentTask ? true : false;
     }
 
@@ -75,7 +84,7 @@ export class RecordController {
 
     private updateElaspedTime(elapsedMinutes: string, timeUnit: string) {
         var newValue = this.padLeft(elapsedMinutes, 5) + timeUnit;
-        
+
         this.appContext.Emitter.emit(ApplicationContext.OnUpdateElapseTime, newValue);
     }
 
@@ -93,13 +102,13 @@ export class RecordController {
         return "Is running: " + this.isRunning + " Elapsed-Total: " + this.currentTask.timeInMs + " Start-Time: " + this.startTime;
     }
 
-    private applyItem(task:TaskEntity){
+    private applyItem(task: TaskEntity) {
 
-        if(!task.timeInMs) {
-            task.timeInMs = 0;           
+        if (!task.timeInMs) {
+            task.timeInMs = 0;
         }
-                    
-        this.currentTask = task;        
+
+        this.currentTask = task;
         var inMinutes = this.toMinutes(task.timeInMs);
 
         this.updateElaspedTime(inMinutes.toString(), RecordController.MinuteUnit);
