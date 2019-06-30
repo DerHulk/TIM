@@ -5,7 +5,7 @@ import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { TaskEntity } from '../common/taskEntity';
 import { localStorage } from "local-storage";
-import { TaskManager } from './taskManager';
+import { TaskConverter } from './taskConverter';
 import { UrlContext } from './urlContext';
 import { requestContext } from './requestContext';
 import { getDownStrategy as getDownloadStrategy, getUploadStrategy } from './strategyFactory';
@@ -35,16 +35,16 @@ export class CompanionController {
         context.downloader = getDownloadStrategy(sourceTyp);
         context.uploader = getUploadStrategy(sourceTyp);
 
-        this.pullFromServerPushDevice(context);
+        this.pullFromServerPushToDevice(context);
         //read inputbox and push to url
     }
 
-    private pullFromServerPushDevice(context: UrlContext) {
+    private pullFromServerPushToDevice(context: UrlContext) {
 
         context.downloader.download(context).then((function (arrayBuffer: ArrayBuffer) {
 
             var request = new requestContext(context.url, arrayBuffer);
-            var tupels = context.taskManager.Convert(context, request);
+            var tupels = context.taskConverter.Convert(context, request);
             var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(tupels);
 
             context.tasks = tupels.map(x => x.task);
@@ -70,7 +70,7 @@ export class CompanionController {
             result.tasks = [];
         }
 
-        result.taskManager = new TaskManager();
+        result.taskConverter = new TaskConverter();
         result.save = () => {
             var raw = JSON.stringify(result);
             localStorage.setItem('UrlContext', raw);

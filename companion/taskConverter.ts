@@ -6,7 +6,7 @@ import { X_OK } from 'constants';
 import { UrlContext } from './urlContext';
 import { requestContext } from './requestContext';
 
-export class TaskManager {
+export class TaskConverter {
 
     public Convert(context: UrlContext, request: requestContext): Array<TaskStatusTuple> {
 
