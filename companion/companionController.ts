@@ -9,7 +9,8 @@ import { localStorage } from "local-storage";
 import { TaskConverter } from './taskConverter';
 import { UrlContext } from './urlContext';
 import { requestContext } from './requestContext';
-import { getDownStrategy as getDownloadStrategy, getUploadStrategy } from './strategyFactory';
+import { getDownStrategy as getDownloadStrategy} from './strategyFactory';
+import { getUploadStrategy as getUploadStrategy} from './strategyFactory';
 
 export class CompanionController {
 
@@ -18,13 +19,18 @@ export class CompanionController {
     }
 
     public syncTasks() {
+                  
+        
 
         var that = this;
         var urlRaw = JSON.parse(settingsStorage.getItem("ServerUrl"));
         var sourceTypRaw = JSON.parse(settingsStorage.getItem("SourceTyp"))
-
-        if (!urlRaw || !sourceTypRaw)
+                
+        if (!urlRaw && !sourceTypRaw)
             return;
+            
+        if(sourceTypRaw.values[0].name == 'Dropbox')
+            urlRaw ='Dropbox';
 
         console.log("Url:" + urlRaw.name);
         console.log("Source:" + sourceTypRaw.values[0].name);
@@ -64,8 +70,19 @@ export class CompanionController {
 
         let file;
         while ((file = await inbox.pop())) {
-            var payload = await file.text();
-            console.log('file contents: ' + payload );
+            var buffer = await file.arrayBuffer();            
+            var task = ArrayBufferHelper.BufferToObject<TaskEntity>(buffer, true);                        
+            
+            var incomingList = new Array<TaskEntity>();
+            incomingList.push(task);
+            context.tasks = incomingList;
+
+            console.log('ok...');
+            context.save();
+
+            context.uploader.upload(context).then(x=> 
+                console.log('Upload finished')).catch(x=> 
+                    console.log('Error by Upload:' + x));
         }
     }
 

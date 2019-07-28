@@ -20,7 +20,8 @@ function settingsComponent(props) {
           ]}
         />
 
-{ JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name === 'Dropbox' && 
+{ (props.settingsStorage.getItem("SourceTyp") &&
+    JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name === 'Dropbox') && 
     <TextInput
       label="Access-Token"
       placeholder="Enter your Access-Token"
@@ -28,7 +29,8 @@ function settingsComponent(props) {
 />
 }
 
-{ JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name !== 'Dropbox' && 
+{ (props.settingsStorage.getItem("SourceTyp") &&
+  JSON.parse(props.settingsStorage.getItem("SourceTyp")).values[0].name !== 'Dropbox') && 
 <TextInput
           label="ServerUrl"
           settingsKey="ServerUrl"
