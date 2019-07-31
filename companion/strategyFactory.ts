@@ -104,44 +104,50 @@ export class DropboxUploadStrategy implements IUploadStrategy {
             
             console.log('got download...');   
 
-            var currentData = ArrayBufferHelper.BufferToObject<Array<any>>(download);
+            var serverData = ArrayBufferHelper.BufferToObject<Array<any>>(download);
             var result = new Array<any>();
 
-            currentData.forEach(d=> {
+            serverData.forEach(serverItem=> {
 
-                console.log('download item...' + d); 
-                if(d.id){
+                console.log('download item...' + serverItem); 
+                if(serverItem.id){
                     
-                    console.log('Item to change ' + d.id); 
+                    console.log('Item to change ' + serverItem.id); 
 
-                    var corresponding = <any>context.tasks.find(x=> x.id == d.id);
-                    var merge :any = {};
+                    var corresponding = context.tasks.find(x=> x.id == serverItem.id && x.timeInMs != undefined);
 
-                    Object.keys(d)
-                    .forEach(key => merge[key] = d[key]);
+                    if(corresponding){
+                        var merge :any = {};
 
-                    Object.keys(corresponding)
-                        .forEach(key => merge[key] = corresponding[key]);
-                     
-                    merge['test'] = 'Hallo';
-                    var test = JSON.stringify(merge);
-                    console.log('Merge ' +test);
-
-                    result.push(merge);
+                        Object.keys(serverItem)
+                            .forEach(key => merge[key] = serverItem[key]);
+                                             
+                        merge.timeInMs = corresponding.timeInMs;
+                        var test = JSON.stringify(merge);
+                        console.log('Merge ' +test);
+                        console.log('Merge timeInMs' + merge.timeInMs);
+                        console.log('Merge corresponding' + corresponding.timeInMs);
+                        result.push(merge);
+                    }
+                    else {
+                        result.push(serverItem);
+                    }                                                                
                 }                
             });
                         
-            var accessTokenRaw = JSON.parse(settingsStorage.getItem("AccessToken"));
-            var accessToken = (accessTokenRaw) ?  accessTokenRaw.name : '';
+            if(result.some(x=> x.timeInMs)){
+                var accessTokenRaw = JSON.parse(settingsStorage.getItem("AccessToken"));
+                var accessToken = (accessTokenRaw) ?  accessTokenRaw.name : '';
+        
+                var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });       
+                var jsonData = JSON.stringify(result);
     
-            var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });       
-            var jsonData = JSON.stringify(result);
-
-            var buffer = Buffer.from( jsonData);
-
-            dbx.setAccessToken(accessToken); 
-            console.log('start dropbox upload buffer-lenght:' + buffer.length);                   
-            return dbx.filesUpload( { path: '/Tasks.json', contents: buffer,  mode:   { '.tag': 'overwrite'}});
+                var buffer = Buffer.from( jsonData);
+    
+                dbx.setAccessToken(accessToken); 
+                console.log('start dropbox upload buffer-lenght:' + buffer.length);                   
+                return dbx.filesUpload( { path: '/Tasks.json', contents: buffer,  mode:   { '.tag': 'overwrite'}});
+            }            
         });
     }
 

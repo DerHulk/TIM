@@ -64,11 +64,11 @@ export class ApplicationContext {
 
     public UpdateTaskFile(toWrite: TaskEntity) {
 
-        console.log("[UpdateTaskFile] start..");
+        console.log("[UpdateTaskFile] start...");
         var list = this.ReadTaskFile();
 
         list.filter(x=> x.id == toWrite.id).forEach(x=> {
-            toWrite.timeInMs = toWrite.timeInMs;
+            x.timeInMs = toWrite.timeInMs;
         });
 
         this.WriteTaskFile(list);

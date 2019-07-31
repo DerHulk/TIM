@@ -38,6 +38,7 @@ export class CompanionController {
         var url = urlRaw.name;
         var sourceTyp = sourceTypRaw.values[0].name;
         var context = that.loadContext(url);
+        console.log('current context has ' + context.tasks.length + ' tasks.');
 
         context.downloader = getDownloadStrategy(sourceTyp);
         context.uploader = getUploadStrategy(sourceTyp);
@@ -71,17 +72,24 @@ export class CompanionController {
         let file;
         while ((file = await inbox.pop())) {
             var buffer = await file.arrayBuffer();            
-            var task = ArrayBufferHelper.BufferToObject<TaskEntity>(buffer, true);                        
-            
-            var incomingList = new Array<TaskEntity>();
-            incomingList.push(task);
-            context.tasks = incomingList;
+            var incoming = ArrayBufferHelper.BufferToObject<TaskEntity>(buffer, true);                                    
+            var corresponding = context.tasks.find(x=> x.id == incoming.id)
 
-            console.log('ok...');
-            context.save();
+            console.log('Incoming has timeInMs...' + incoming.timeInMs);
 
-            context.uploader.upload(context).then(x=> 
-                console.log('Upload finished')).catch(x=> 
+            if(corresponding){
+                console.log('Found corresponding in context...');
+                corresponding.timeInMs = incoming.timeInMs;
+            }
+            else {
+                console.log('Not Found corresponding in context...');
+                context.tasks.push(incoming);
+            }
+                                  
+            context.uploader.upload(context).then(x=> {
+                console.log('Upload finished')
+                context.save();
+            }).catch(x=> 
                     console.log('Error by Upload:' + x));
         }
     }

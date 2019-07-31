@@ -23,7 +23,7 @@ export function bindTask(appContext: ApplicationContext, controller: TaskControl
 
     appContext.Emitter.add(ApplicationContext.OnTaskUpdated,
         (task: TaskEntity) => {
-            console.log("[bindTask] send task: " + task.id + " to output.");
+            console.log("[bindTask] send task: " + task.id + " timeInMs: " + task.timeInMs + " to output.");
             var buffer = ArrayBufferHelper.ObjectToBuffer(task);
             outbox.enqueue(task.id.toString(), buffer );
         });
