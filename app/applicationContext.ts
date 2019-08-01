@@ -13,7 +13,7 @@ interface IEventEmitter {
 
 }
 
-class EventEmitter implements IEventEmitter {
+export class EventEmitter implements IEventEmitter {
     private _eventHandlers: { [id: string]: any; } = {};
 
     // maintain a list of listeners
@@ -44,7 +44,7 @@ class EventEmitter implements IEventEmitter {
     }
 }
 
-export class ApplicationContext {
+export class ApplicationContext  implements IApplicationContext {
 
     public static OnUpdateElapseTime: string = "1d9ef731-b016-4178-baf4-2ebe2c728260";
     public static OnSyncTasks: string = "bc040a5a-2e14-4aff-af23-51d8494045f5";
@@ -87,4 +87,10 @@ export class ApplicationContext {
             return new Array<TaskEntity>();
         }
     }
+}
+
+export  interface IApplicationContext {
+    Emitter: IEventEmitter;
+    ReadTaskFile(): Array<TaskEntity>;
+    WriteTaskFile(toWrite: Array<TaskEntity>) : void;
 }

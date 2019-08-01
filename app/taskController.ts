@@ -1,4 +1,4 @@
-import { ApplicationContext } from './applicationContext';
+import { ApplicationContext, IApplicationContext } from './applicationContext';
 import { TaskEntity } from '../common/taskEntity';
 import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { TaskStatus } from '../common/enums';
@@ -8,7 +8,7 @@ export class TaskController {
 
     private  loadedItems: Array<TaskEntity>;
 
-    constructor(private appContext: ApplicationContext) {
+    constructor(private appContext: IApplicationContext) {
 
         //event
         appContext.Emitter.add(ApplicationContext.OnSyncTasks, (x: Array<TaskStatusTuple>) => {
@@ -48,11 +48,7 @@ export class TaskController {
 
         if (current.length === 0)
             current = toKeep.concat(toUpdate);
-
-            // current.forEach(x => {
-            //     console.log("[TaskController]current:" + x.titel + " Id:" + x.id);
-            // });
-
+         
         this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
         this.appContext.WriteTaskFile(current);
 

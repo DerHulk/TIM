@@ -20,8 +20,6 @@ export class CompanionController {
 
     public syncTasks() {
                   
-        
-
         var that = this;
         var urlRaw = JSON.parse(settingsStorage.getItem("ServerUrl"));
         var sourceTypRaw = JSON.parse(settingsStorage.getItem("SourceTyp"))
