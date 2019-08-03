@@ -1,26 +1,43 @@
-import {expect } from 'chai';
-import { IApplicationContext, EventEmitter, ApplicationContext } from '../app/applicationContext';
+import { expect } from 'chai';
 import { TaskController } from '../app/taskController';
 import { TaskEntity } from '../common/taskEntity';
+import { TaskStatusTuple } from '../common/taskStatusTuple';
+import * as appEvent from '../app/constant';
+import { IApplicationContext } from '../app/IApplicationContext';
+import { EventEmitter } from '../app/EventEmitter';
 
 
 describe('taskController', () => {
-    it('will sync the task from the companion with the local', () => {
-        var context : IApplicationContext = {
-             Emitter: new EventEmitter(),
-             ReadTaskFile: ()=> { 
-                 var result = new Array<TaskEntity>();
-                 return result;
-             },
-            WriteTaskFile: ()=> {
 
-            }
-         } ;        
-        var newFromCompanion = new Array<TaskEntity>();       
-        var target = new TaskController(context);        
+    var newFromCompanion = new Array<TaskStatusTuple>();
+    var oldOnDevice = new Array<TaskEntity>();
+    var result = new Array<TaskEntity>();
+    var appContext: IApplicationContext;
+    var target : TaskController;
 
-        context.Emitter.emit(ApplicationContext.OnSyncTasks, newFromCompanion );
+    beforeEach(() => {
+        appContext = {
+            Emitter: new EventEmitter(),
+            ReadTaskFile: () => {
+                return oldOnDevice;
+            },
+            WriteTaskFile: (toWrite: Array<TaskEntity>) => {
+                result = toWrite;
+            },
+            device: null,
+        };
 
-        expect(target).to.be.not.null;
+        target = new TaskController(appContext);
+    })
+   
+    context('updateLocal', ()=> {
+        it('updates the local list with the new from the companion',()=> {
+            //arrange
+
+            //act
+            target.updateLocal(null);
+            //assert
+                
+        });        
     });
 });

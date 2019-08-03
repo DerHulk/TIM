@@ -5,7 +5,6 @@ import { requestContext } from './requestContext';
 import { outbox } from "file-transfer";
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { Dropbox } from 'dropbox'
-import { settingsStorage } from 'settings';
 
 export interface IUploadStrategy {
     upload(context: UrlContext) : Promise<any>;
@@ -73,7 +72,7 @@ export class DropboxDownloadStrategy implements IDownloadStrategy {
 
     download(context: UrlContext): Promise<ArrayBuffer> {
 
-        var accessTokenRaw = JSON.parse(settingsStorage.getItem("AccessToken"));
+        var accessTokenRaw = context.companionContext.getSettingsObject("AccessToken");
         var accessToken = (accessTokenRaw) ? accessTokenRaw.name : '';
 
         var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });
@@ -136,7 +135,7 @@ export class DropboxUploadStrategy implements IUploadStrategy {
             });
                         
             if(result.some(x=> x.timeInMs)){
-                var accessTokenRaw = JSON.parse(settingsStorage.getItem("AccessToken"));
+                var accessTokenRaw = context.companionContext.getSettingsObject("AccessToken");
                 var accessToken = (accessTokenRaw) ?  accessTokenRaw.name : '';
         
                 var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });       

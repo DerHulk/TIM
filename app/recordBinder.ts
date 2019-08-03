@@ -4,6 +4,8 @@ import { RecordController } from "./recordController"
 import * as document from "document";
 import { ApplicationContext } from './applicationContext';
 import { TaskEntity } from '../common/taskEntity';
+import * as appEvent from './constant';
+
 
 export function bindRecord(appContext: ApplicationContext,
   controller: RecordController) {
@@ -55,12 +57,12 @@ export function bindRecord(appContext: ApplicationContext,
     container.value = ApplicationContext.TaskListViewIndex;
   };
 
-  appContext.Emitter.add(ApplicationContext.OnUpdateElapseTime,
+  appContext.Emitter.add(appEvent.OnUpdateElapseTime,
     (value:string) => {      
       time.text = value;     
     });
 
-  appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task:TaskEntity) => {
+  appContext.Emitter.add(appEvent.OnTaskSelected, (task:TaskEntity) => {
       
       text.text = task.titel;  
       

@@ -1,16 +1,13 @@
-
-import { outbox } from "file-transfer";
-import { inbox } from "file-transfer";
-import { settingsStorage } from "settings";
 import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { TaskEntity } from '../common/taskEntity';
-import { localStorage } from "local-storage";
 import { TaskConverter } from './taskConverter';
 import { UrlContext } from './urlContext';
 import { requestContext } from './requestContext';
 import { getDownStrategy as getDownloadStrategy} from './strategyFactory';
 import { getUploadStrategy as getUploadStrategy} from './strategyFactory';
+import { TaskExchanger } from './taskExchanger';
+import { ICompanionContext } from './icompanionContext';
 
 export class CompanionController {
 
@@ -18,11 +15,11 @@ export class CompanionController {
 
     }
 
-    public syncTasks() {
-                  
+    public syncTasks(companionContext : ICompanionContext) {                  
+        
         var that = this;
-        var urlRaw = JSON.parse(settingsStorage.getItem("ServerUrl"));
-        var sourceTypRaw = JSON.parse(settingsStorage.getItem("SourceTyp"))
+        var urlRaw = companionContext.getSettingsObject("ServerUrl");
+        var sourceTypRaw = companionContext.getSettingsObject("SourceTyp");
                 
         if (!urlRaw && !sourceTypRaw)
             return;
@@ -35,41 +32,41 @@ export class CompanionController {
 
         var url = urlRaw.name;
         var sourceTyp = sourceTypRaw.values[0].name;
-        var context = that.loadContext(url);
+        var context = that.loadContext(companionContext, url);
         console.log('current context has ' + context.tasks.length + ' tasks.');
 
         context.downloader = getDownloadStrategy(sourceTyp);
         context.uploader = getUploadStrategy(sourceTyp);
 
         this.pullFromServerPushToDevice(context);
-        this.receiveFromDevicePushToServer(context);
-        //read inputbox and push to url
+        this.receiveFromDevicePushToServer(context);      
     }
 
-    private pullFromServerPushToDevice(context: UrlContext) {
+    public pullFromServerPushToDevice(context: UrlContext) : Promise<any> {
 
-        context.downloader.download(context).then((function (arrayBuffer: ArrayBuffer) {
+        return context.downloader.download(context).then((function (arrayBuffer: ArrayBuffer) {
 
             var request = new requestContext(context.url, arrayBuffer);
-            var tupels = context.taskConverter.Convert(context, request);
-            var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(tupels);
+            var exchanger = new TaskExchanger(context.tasks);
+            var serverTasks = context.downloader.map(request);            
+            
+            if(exchanger.NeedDeviceUpdate(serverTasks) ){
+                serverTasks = exchanger.WhereIsValid(serverTasks);
 
-            context.tasks = tupels.map(x => x.task);
-            context.save();
+                context.tasks = serverTasks;
+                context.save();
 
-            console.log('tupels:' + tupels.length);
-            context.enqueue(appArrayBuffer);
-
+                var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(serverTasks);
+                context.companionContext.enqueue(appArrayBuffer);
+            }           
         })).catch(function (error) {
             console.log("fetched faild:" + error);
         });
     }
 
     private async receiveFromDevicePushToServer(context: UrlContext) {
-
-        let file;
-        while ((file = await inbox.pop())) {
-            var buffer = await file.arrayBuffer();            
+        
+        context.companionContext.handleInbox((buffer)=> {
             var incoming = ArrayBufferHelper.BufferToObject<TaskEntity>(buffer, true);                                    
             var corresponding = context.tasks.find(x=> x.id == incoming.id)
 
@@ -89,37 +86,27 @@ export class CompanionController {
                 context.save();
             }).catch(x=> 
                     console.log('Error by Upload:' + x));
-        }
+        });      
     }
 
-    public loadContext(url: string): UrlContext {
-        var raw = localStorage.getItem('UrlContext');
-        var result = new UrlContext();
+    public loadContext(companionContext:ICompanionContext, url: string): UrlContext {
+        var result : UrlContext;
+         result = companionContext.getLocalObject('UrlContext');
+         
 
-        if (raw) {
-            result = JSON.parse(raw);
-        }
-        else {
+        if (result == null) {
+            result = new UrlContext();
             result.url = url;
             result.tasks = [];
-        }
+        }        
 
+        result.companionContext = companionContext;        
         result.taskConverter = new TaskConverter();
+
         result.save = () => {
-            var raw = JSON.stringify(result);
-            localStorage.setItem('UrlContext', raw);
+            companionContext.saveLocalObject('UrlContext', result);            
         };
-
-        result.enqueue = (arrayBuffer: ArrayBuffer) => {
-            outbox.enqueue("task.json", arrayBuffer)
-                .then((ft: any) => {
-                    console.log('Transfer of ' + ft.name + ' successfully queued.');
-                })
-                .catch((error) => {
-                    console.log(`Failed to queue $‌{filename}: $‌{error}`);
-                });
-        };
-
+        
         return result;
     }
 }

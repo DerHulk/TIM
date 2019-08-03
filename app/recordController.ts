@@ -3,6 +3,7 @@ import { display } from "display";
 import * as document from "document";
 import { ApplicationContext } from './applicationContext';
 import { TaskEntity } from '../common/taskEntity';
+import * as appEvent from './constant';
 
 
 
@@ -22,7 +23,7 @@ export class RecordController {
 
         this.updateElaspedTime("0", RecordController.MinuteUnit);
 
-        appContext.Emitter.add(ApplicationContext.OnTaskSelected, (task: TaskEntity) => {
+        appContext.Emitter.add(appEvent.OnTaskSelected, (task: TaskEntity) => {
             this.applyItem(task);
         });
     }
@@ -85,7 +86,7 @@ export class RecordController {
     private updateElaspedTime(elapsedMinutes: string, timeUnit: string) {
         var newValue = this.padLeft(elapsedMinutes, 5) + timeUnit;
 
-        this.appContext.Emitter.emit(ApplicationContext.OnUpdateElapseTime, newValue);
+        this.appContext.Emitter.emit(appEvent.OnUpdateElapseTime, newValue);
     }
 
     private padLeft(n: string, width: number) {

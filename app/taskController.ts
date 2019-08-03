@@ -1,7 +1,9 @@
-import { ApplicationContext, IApplicationContext } from './applicationContext';
+import { ApplicationContext } from './applicationContext';
 import { TaskEntity } from '../common/taskEntity';
 import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { TaskStatus } from '../common/enums';
+import * as appEvent from './constant';
+import { IApplicationContext } from './IApplicationContext';
 
 
 export class TaskController {
@@ -11,17 +13,17 @@ export class TaskController {
     constructor(private appContext: IApplicationContext) {
 
         //event
-        appContext.Emitter.add(ApplicationContext.OnSyncTasks, (x: Array<TaskStatusTuple>) => {
+        appContext.Emitter.add(appEvent.OnSyncTasks, (x: Array<TaskStatusTuple>) => {
             this.updateLocal(x);
         });
     }
 
     public loadLocal() {
         var current = this.appContext.ReadTaskFile();
-        this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
+        this.appContext.Emitter.emit(appEvent.OnTaskListChanged, current);
     }
 
-    private updateLocal(tupels: Array<TaskStatusTuple>) {
+    public updateLocal(tupels: Array<TaskStatusTuple>) {
 
         console.log("[TaskController]updateLocal: was called with:" + tupels.length);
 
@@ -49,13 +51,13 @@ export class TaskController {
         if (current.length === 0)
             current = toKeep.concat(toUpdate);
          
-        this.appContext.Emitter.emit(ApplicationContext.OnTaskListChanged, current);
+        this.appContext.Emitter.emit(appEvent.OnTaskListChanged, current);
         this.appContext.WriteTaskFile(current);
 
         this.loadedItems = current;
     }
 
     public selectByIndex(index:number){          
-        this.appContext.Emitter.emit(ApplicationContext.OnTaskSelected, this.loadedItems[index] );
+        this.appContext.Emitter.emit(appEvent.OnTaskSelected, this.loadedItems[index] );
     }
 }
