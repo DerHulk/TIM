@@ -26,9 +26,9 @@ describe('RecordController', () => {
     context('finishe', () => {
         var toWriteParameter: TaskEntity;
 
-        var appcontext:IApplicationContext = {
-            Emitter: new EventEmitter,                        
-            UpdateTaskFile: (toWrite)=> { 
+        var appcontext: IApplicationContext = {
+            Emitter: new EventEmitter,
+            UpdateTaskFile: (toWrite) => {
                 toWriteParameter = toWrite;
             },
             WriteTaskFile: null,
@@ -37,7 +37,7 @@ describe('RecordController', () => {
         };
         var target = new RecordController(appcontext);
 
-        it('updates the local tasks', (done:Done) => {
+        it('updates the local tasks', (done: Done) => {
 
             //arrange
             var task = new TaskEntity(1, "test");
@@ -49,11 +49,25 @@ describe('RecordController', () => {
                 target.finished();
 
                 //assert    
-                expect(task.timeInMs).to.be.greaterThan(0)                
+                expect(task.timeInMs).to.be.greaterThan(0)
                 expect(task).to.be.equals(toWriteParameter);
                 done();
             }, 100);
         });
 
+        it('emit the OnTaskUpdated event', () => {
+            //arrange
+            var task = new TaskEntity(1, "test");
+            var eventWasCalled = false;
+            appcontext.Emitter.emit(appEvent.OnTaskUpdated, task);
+            appcontext.Emitter.add(appEvent.OnTaskUpdated, () => eventWasCalled = true);
+
+            //act            
+            target.finished();
+
+            //assert 
+            expect(eventWasCalled).to.be.true;        
     });
+
+});
 });

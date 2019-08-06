@@ -1,7 +1,4 @@
-import clock from "clock";
-import { display } from "display";
 import { RecordController } from "./recordController"
-import * as document from "document";
 import { ApplicationContext } from './applicationContext';
 import { TaskEntity } from '../common/taskEntity';
 import * as appEvent from './constant';
@@ -10,26 +7,21 @@ import * as appEvent from './constant';
 export function bindRecord(appContext: ApplicationContext,
   controller: RecordController) {
 
-  clock.granularity = "seconds";
-  clock.ontick = (evt) => controller.update();
+  appContext.device.onClockTick("seconds", (evt) => controller.update());
+  appContext.device.onDisplayChange((evt) => {
+    if (appContext.device.isDisplayOn)
+        controller.update();
+  });
 
-  display.onchange = (evt) => {
-    if (display.on)
-      controller.update();
-    // else
-    //   appContext.WriteRecord(controller);
-    
-  };
-
-  let container = document.getElementById("container");
-  let playButton = document.getElementById("playButton");
-  let pauseButton = document.getElementById("pauseButton");
-  let finishButton = document.getElementById("finishButton");
-  let time = document.getElementById("mixedtext");
+  let container = appContext.device.getDocumentElementById("container");
+  let playButton = appContext.device.getDocumentElementById("playButton");
+  let pauseButton = appContext.device.getDocumentElementById("pauseButton");
+  let finishButton = appContext.device.getDocumentElementById("finishButton");
+  let time = appContext.device.getDocumentElementById("mixedtext");
   let text = time.getElementById("copy");
 
-  if(!controller.hasTask()){
-   
+  if (!controller.hasTask()) {
+
     container.value = ApplicationContext.TaskListViewIndex;
     (<any>playButton).style.display = "none";
     (<any>finishButton).style.display = "none";
@@ -39,18 +31,18 @@ export function bindRecord(appContext: ApplicationContext,
 
   (<any>pauseButton).style.display = "none";
 
-  playButton.onactivate = (evt) => {
+  playButton.onactivate = (evt:any) => {
     controller.start();
     (<any>playButton).style.display = "none";
     (<any>pauseButton).style.display = "inline";
   };
-  pauseButton.onactivate = (evt) => {
+  pauseButton.onactivate = (evt:any) => {
     controller.pause();
     (<any>pauseButton).style.display = "none";
     (<any>playButton).style.display = "inline";
   };
 
-  finishButton.onactivate = (evt) => {
+  finishButton.onactivate = (evt:any) => {
     controller.finished();
     (<any>pauseButton).style.display = "none";
     (<any>playButton).style.display = "inline";
@@ -58,19 +50,19 @@ export function bindRecord(appContext: ApplicationContext,
   };
 
   appContext.Emitter.add(appEvent.OnUpdateElapseTime,
-    (value:string) => {      
-      time.text = value;     
+    (value: string) => {
+      time.text = value;
     });
 
-  appContext.Emitter.add(appEvent.OnTaskSelected, (task:TaskEntity) => {
-      
-      text.text = task.titel;  
-      
-      if(controller.hasTask()){        
-        container.value = ApplicationContext.MainViewIndex;
-        (<any>playButton).style.display = "inline";
-        (<any>finishButton).style.display = "inline";
-      }
-      
-    });
+  appContext.Emitter.add(appEvent.OnTaskSelected, (task: TaskEntity) => {
+
+    text.text = task.titel;
+
+    if (controller.hasTask()) {
+      container.value = ApplicationContext.MainViewIndex;
+      (<any>playButton).style.display = "inline";
+      (<any>finishButton).style.display = "inline";
+    }
+
+  });
 }

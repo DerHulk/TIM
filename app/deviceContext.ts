@@ -5,8 +5,22 @@ import { inbox } from "file-transfer";
 import { outbox } from "file-transfer";
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import * as document from "document";
+import clock from "clock";
+import { display } from "display";
 
 export class DeviceContext implements IDeviceContext {
+
+    onDisplayChange(eventhandler: (args: any) => void): void {
+        display.onchange = eventhandler;
+    }
+    isDisplayOn(): boolean {
+        return display.on;       
+    };
+    onClockTick(granularity: "off" | "seconds" | "minutes" | "hours", eventhandler: (args: any) => void) {
+
+        clock.granularity = granularity;
+        clock.ontick = eventhandler;
+    }
 
     getDocumentElementById(id: string):any {
         return document.getElementById(id);

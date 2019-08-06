@@ -8,4 +8,7 @@ export interface IDeviceContext {
     enqueue(task:TaskEntity):void; 
     
     getDocumentElementById(id:string): any;
+    onClockTick(granularity:"off" | "seconds" | "minutes" | "hours", eventhandler:(args:any)=> void): any;
+    onDisplayChange(eventhandler:(args:any)=> void):void;
+    isDisplayOn():boolean;
 }

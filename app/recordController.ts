@@ -73,6 +73,7 @@ export class RecordController {
 
         this.pause();
         this.appContext.UpdateTaskFile(this.currentTask);
+        this.appContext.Emitter.emit(appEvent.OnTaskUpdated, this.currentTask);
     }
 
     public hasTask(): boolean {

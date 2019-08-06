@@ -31,8 +31,7 @@ export class ApplicationContext implements IApplicationContext {
             x.timeInMs = toWrite.timeInMs;
         });
 
-        this.WriteTaskFile(list);
-        this.Emitter.emit(appEvent.OnTaskUpdated, toWrite);
+        this.WriteTaskFile(list);      
     }
 
     public WriteTaskFile(toWrite: Array<TaskEntity>) {
