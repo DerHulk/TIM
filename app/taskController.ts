@@ -4,6 +4,7 @@ import { TaskStatusTuple } from '../common/taskStatusTuple';
 import { TaskStatus } from '../common/enums';
 import * as appEvent from './constant';
 import { IApplicationContext } from './IApplicationContext';
+import { TaskMerger } from '../common/taskMerger';
 
 
 export class TaskController {
@@ -13,7 +14,7 @@ export class TaskController {
     constructor(private appContext: IApplicationContext) {
 
         //event
-        appContext.Emitter.add(appEvent.OnSyncTasks, (x: Array<TaskStatusTuple>) => {
+        appContext.Emitter.add(appEvent.OnSyncTasks, (x: Array<TaskEntity>) => {
             this.updateLocal(x);
         });
     }
@@ -23,38 +24,25 @@ export class TaskController {
         this.appContext.Emitter.emit(appEvent.OnTaskListChanged, current);
     }
 
-    public updateLocal(tupels: Array<TaskStatusTuple>) {
+    public updateLocal(serverTasks: Array<TaskEntity>) {
+        
+        var current = this.appContext.ReadTaskFile();        
+        
+        if (current && current.length > 0){
 
-        console.log("[TaskController]updateLocal: was called with:" + tupels.length);
+            var merger = new TaskMerger();
+            current = merger.Merge(serverTasks, current);
+            
+        }        
+            
+        current.forEach(x=> {
+            if(!x.timeInMs)
+                x.timeInMs = 0;            
+        });        
 
-        var current = this.appContext.ReadTaskFile();
-        var toDelete = tupels.filter(x => x.status === TaskStatus.Deleted).map(x => x.task);
-        var toUpdate = tupels.filter(x => x.status === TaskStatus.Updated).map(x => x.task);
-        var toAdd = tupels.filter(x => x.status === TaskStatus.New).map(x => x.task);
-        var toKeep = tupels.filter(x => x.status === TaskStatus.None).map(x => x.task);
-
-        console.log("[TaskController]toDelete:" + toDelete.length);
-        console.log("[TaskController]toUpdate:" + toUpdate.length);
-        console.log("[TaskController]toAdd:" + toAdd.length);
-        console.log("[TaskController]totoKeep:" + toKeep.length);
-
-        current = current.concat(toAdd);
-        current = current.filter(x => !toDelete.some(d => d.id === x.id));
-
-        toUpdate.forEach(x => {
-            current.filter(f => f.id === x.id)
-                .forEach(u => {
-                    u.titel = x.titel;
-                });
-        });
-
-        if (current.length === 0)
-            current = toKeep.concat(toUpdate);
-         
         this.appContext.Emitter.emit(appEvent.OnTaskListChanged, current);
         this.appContext.WriteTaskFile(current);
-
-        this.loadedItems = current;
+        this.loadedItems = current;         
     }
 
     public selectByIndex(index:number){          
