@@ -25,6 +25,7 @@ describe('taskController', () => {
             WriteTaskFile: (toWrite: Array<TaskEntity>) => {
                 result = toWrite;
             },
+            UpdateTaskFile: null,
             device: null,
         };
 

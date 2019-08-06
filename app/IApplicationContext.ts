@@ -6,5 +6,6 @@ export interface IApplicationContext {
     Emitter: IEventEmitter;
     ReadTaskFile(): Array<TaskEntity>;
     WriteTaskFile(toWrite: Array<TaskEntity>): void;
+    UpdateTaskFile(toWrite: TaskEntity): void;
     device: IDeviceContext;
 }

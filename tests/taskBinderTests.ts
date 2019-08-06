@@ -19,7 +19,8 @@ describe('taskBinder', () => {
                 device: null,
                 Emitter: null,
                 ReadTaskFile: null,
-                WriteTaskFile: null
+                WriteTaskFile: null,
+                UpdateTaskFile: null
             };
         });
 
