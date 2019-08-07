@@ -17,9 +17,9 @@ export class ApplicationContext implements IApplicationContext {
     Emitter: IEventEmitter;
     device: IDeviceContext;
 
-    constructor() {
+    constructor(device: IDeviceContext) {
         this.Emitter = new EventEmitter();
-
+        this.device = device;
     }
 
     public UpdateTaskFile(toWrite: TaskEntity) {

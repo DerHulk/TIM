@@ -6,9 +6,10 @@ import * as fs from "fs";
 import { TaskController } from './taskController';
 import { app } from 'peer';
 import { bindTask } from './taskBinder';
+import { DeviceContext } from './deviceContext';
 
-
-let appContext = new ApplicationContext();
+let device = new DeviceContext();
+let appContext = new ApplicationContext(device);
 let recordController = new RecordController(appContext);
 let taskController = new TaskController(appContext);
 
