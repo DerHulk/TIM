@@ -42,10 +42,9 @@ function bindTaskList(appContext: IApplicationContext, tasks: TaskEntity[]) {
     };
 }
 
-function bindItemClick(appContext: IApplicationContext, controller: TaskController) {
-    let container = appContext.device.getDocumentElementById("container");
+function bindItemClick(appContext: IApplicationContext, controller: TaskController) {    
     let list = appContext.device.getDocumentElementById("my-list");
-    let items = appContext.device.getDocumentElementById("tile-list-item");
+    let items = list.getElementsByClassName("tile-list-item");
 
     items.forEach((element: any, index: number) => {
         let touch = element.getElementById("touch-me");

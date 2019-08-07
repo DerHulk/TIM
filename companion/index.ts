@@ -10,11 +10,12 @@ let context = new CompanionContext();
 let controller = new CompanionController();
 
 //Companion: The 'wake-interval' API is not yet supported in the Fitbit OS Simulator. Behavior may not match the documentation or real devices.
-controller.syncTasks(context);
+controller.syncTasks(context).finally(() => {
+    if (me.launchReasons.peerAppLaunched || me.launchReasons.wokenUp) {
+        controller.syncTasks(context);
+    }
+    else {
+        me.yield();
+    }
+});
 
-if (me.launchReasons.peerAppLaunched || me.launchReasons.wokenUp) {
-    controller.syncTasks(context);
-}
-else {
-    me.yield();
-}

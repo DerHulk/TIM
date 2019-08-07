@@ -9,7 +9,13 @@ export class CompanionContext implements ICompanionContext {
     async getNextFileNameFromInbox(): Promise<ArrayBuffer> {
         let file;
         file = await inbox.pop();
-        return await file.arrayBuffer()
+
+        if(file){
+            return await file.arrayBuffer();
+        }
+        else {
+            return null;
+        }
     }   
 
     public enqueue(arrayBuffer: ArrayBuffer){

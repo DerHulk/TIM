@@ -1,4 +1,3 @@
-import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 import { ArrayBufferHelper } from '../common/arrayBufferHelper';
 import { TaskEntity } from '../common/taskEntity';
 import { TaskConverter } from './taskConverter';
@@ -15,7 +14,7 @@ export class CompanionController {
 
     }
 
-    public syncTasks(companionContext: ICompanionContext) {
+    public async syncTasks(companionContext: ICompanionContext) {
 
         var that = this;
         var urlRaw = companionContext.getSettingsObject("ServerUrl");
@@ -38,14 +37,14 @@ export class CompanionController {
         context.downloader = getDownloadStrategy(sourceTyp);
         context.uploader = getUploadStrategy(sourceTyp);
 
-        this.pullFromServerPushToDevice(context);
-        this.receiveFromDevicePushToServer(context);
+        await this.pullFromServerPushToDevice(context);
+        await this.receiveFromDevicePushToServer(context);
     }
 
-    public pullFromServerPushToDevice(context: UrlContext): Promise<any> {
+    public async pullFromServerPushToDevice(context: UrlContext): Promise<any> {
 
-        return context.downloader.download(context).then((function (arrayBuffer: ArrayBuffer) {
-
+        try {
+            var arrayBuffer = await context.downloader.download(context);
             var request = new requestContext(context.url, arrayBuffer);
             var exchanger = new TaskExchanger(context.tasks);
             var serverTasks = context.downloader.map(request);
@@ -59,14 +58,16 @@ export class CompanionController {
                 var appArrayBuffer = ArrayBufferHelper.ObjectToBuffer(serverTasks);
                 context.companion.enqueue(appArrayBuffer);
             }
-        })).catch(function (error) {
+        }
+        catch (error) {
             console.log("fetched faild:" + error);
-        });
+        }
     }
 
     public async receiveFromDevicePushToServer(context: UrlContext) {
 
         let buffer: ArrayBuffer;
+
         while (buffer = await context.companion.getNextFileNameFromInbox()) {
 
             if (buffer) {
