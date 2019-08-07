@@ -12,7 +12,7 @@ export function bindTask(appContext: IApplicationContext, controller: TaskContro
         });
 
     controller.loadLocal();
-    appContext.device.onNewInboxFile(() => processNewFiles(appContext));    
+    appContext.device.onNewInboxFile(() => processNewFiles(appContext));
     processNewFiles(appContext);
 
     appContext.Emitter.add(appEvent.OnTaskUpdated,
@@ -42,15 +42,15 @@ function bindTaskList(appContext: IApplicationContext, tasks: TaskEntity[]) {
     };
 }
 
-function bindItemClick(appContext: IApplicationContext, controller: TaskController){
+function bindItemClick(appContext: IApplicationContext, controller: TaskController) {
     let container = appContext.device.getDocumentElementById("container");
     let list = appContext.device.getDocumentElementById("my-list");
     let items = appContext.device.getDocumentElementById("tile-list-item");
 
-    items.forEach((element:any, index:number) => {
+    items.forEach((element: any, index: number) => {
         let touch = element.getElementById("touch-me");
-        touch.onclick = (evt:any) => {
-            controller.selectByIndex(index);            
+        touch.onclick = (evt: any) => {
+            controller.selectByIndex(index);
         }
     });
 }
@@ -59,12 +59,15 @@ export async function processNewFiles(appContext: IApplicationContext) {
 
     let fileName;
     while (fileName = appContext.device.getNextFileNameFromInbox()) {
-        // process each file
-        console.log("Received: " + fileName);
 
-        let companionTasks = appContext.device.readTaskListFile(fileName);
-        console.log("[processNewFiles] Array count: " + companionTasks.length);
-              
-        appContext.Emitter.emit(appEvent.OnSyncTasks, companionTasks);
+        if (fileName) {
+            // process each file
+            console.log("Received: " + fileName);
+
+            let companionTasks = appContext.device.readTaskListFile(fileName);
+            console.log("[processNewFiles] Array count: " + companionTasks.length);
+
+            appContext.Emitter.emit(appEvent.OnSyncTasks, companionTasks);
+        }
     }
 }

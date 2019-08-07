@@ -13,5 +13,5 @@ export class UrlContext {
     downloader: IDownloadStrategy;
     uploader: IUploadStrategy;
     save: ()=> void; 
-    companionContext: ICompanionContext;
+    companion: ICompanionContext;
 }

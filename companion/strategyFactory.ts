@@ -72,7 +72,7 @@ export class DropboxDownloadStrategy implements IDownloadStrategy {
 
     download(context: UrlContext): Promise<ArrayBuffer> {
 
-        var accessTokenRaw = context.companionContext.getSettingsObject("AccessToken");
+        var accessTokenRaw = context.companion.getSettingsObject("AccessToken");
         var accessToken = (accessTokenRaw) ? accessTokenRaw.name : '';
 
         var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });
@@ -135,7 +135,7 @@ export class DropboxUploadStrategy implements IUploadStrategy {
             });
                         
             if(result.some(x=> x.timeInMs)){
-                var accessTokenRaw = context.companionContext.getSettingsObject("AccessToken");
+                var accessTokenRaw = context.companion.getSettingsObject("AccessToken");
                 var accessToken = (accessTokenRaw) ?  accessTokenRaw.name : '';
         
                 var dbx = new Dropbox({ accessToken: accessToken, fetch: fetch });       
