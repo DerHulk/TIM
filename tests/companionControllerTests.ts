@@ -91,12 +91,15 @@ describe('CompanionController', () => {
             deviceQueue[1].timeInMs = 200;
 
             urlContext.companion.getNextFileNameFromInbox = () => {
-                var pop = deviceQueue.shift()
 
-                if (pop)
-                    return ArrayBufferHelper.ObjectToBuffer(pop)
-                else
-                    return null;
+                return new Promise(resolve=> {
+                    var pop = deviceQueue.shift()
+
+                    if (pop)
+                       resolve(ArrayBufferHelper.ObjectToBuffer(pop));
+                    else
+                        resolve(null);
+                });                
             };
             urlContext.save = () => { };
             urlContext.uploader = {
@@ -123,12 +126,15 @@ describe('CompanionController', () => {
             deviceQueue[0].timeInMs = 100;
 
             urlContext.companion.getNextFileNameFromInbox = () => {
-                var pop = deviceQueue.shift()
 
-                if (pop)
-                    return ArrayBufferHelper.ObjectToBuffer(pop)
-                else
-                    return null;
+                return new Promise(resolve=> {
+                    var pop = deviceQueue.shift()
+
+                    if (pop)
+                       resolve(ArrayBufferHelper.ObjectToBuffer(pop));
+                    else
+                        resolve(null);
+                });                
             };
             urlContext.save = () => saveWasCalled = true;
             urlContext.uploader = {

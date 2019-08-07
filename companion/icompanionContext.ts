@@ -3,5 +3,5 @@ export interface ICompanionContext  {
     getSettingsObject: (key:string)=> any;
     getLocalObject: (key:string)=> any;
     saveLocalObject: (key: string, obj:any)=> void;
-    getNextFileNameFromInbox(): ArrayBuffer;
+    getNextFileNameFromInbox(): Promise<ArrayBuffer>;
 }

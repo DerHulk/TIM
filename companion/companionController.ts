@@ -67,7 +67,7 @@ export class CompanionController {
     public async receiveFromDevicePushToServer(context: UrlContext) {
 
         let buffer: ArrayBuffer;
-        while (buffer = context.companion.getNextFileNameFromInbox()) {
+        while (buffer = await context.companion.getNextFileNameFromInbox()) {
 
             if (buffer) {
                 var incoming = ArrayBufferHelper.BufferToObject<TaskEntity>(buffer, true);

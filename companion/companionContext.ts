@@ -4,7 +4,14 @@ import { settingsStorage } from "settings";
 import { localStorage } from "local-storage";
 import { ICompanionContext } from './icompanionContext';
 
-export class CompanionContext implements ICompanionContext {   
+export class CompanionContext implements ICompanionContext {
+
+    async getNextFileNameFromInbox(): Promise<ArrayBuffer> {
+        let file;
+        file = await inbox.pop();
+        return await file.arrayBuffer()
+    }   
+
     public enqueue(arrayBuffer: ArrayBuffer){
         outbox.enqueue("task.json", arrayBuffer)
         .then((ft: any) => {
@@ -13,15 +20,7 @@ export class CompanionContext implements ICompanionContext {
         .catch((error) => {
             console.log(`Failed to queue $‌{filename}: $‌{error}`);
         });
-    };       
-
-    public async handleInbox(handler: (x:ArrayBuffer)=> void){
-        let file;
-        while ((file = await inbox.pop())) {
-            var buffer = await file.arrayBuffer();            
-            handler(buffer);
-        }
-    }
+    };           
 
     public getSettingsObject(key:string):any{
         return  JSON.parse(settingsStorage.getItem(key));
