@@ -5,11 +5,9 @@ import { IEventEmitter } from './IEventEmitter';
 import { IApplicationContext } from './IApplicationContext';
 import { EventEmitter } from './EventEmitter';
 import * as appEvent from './constant';
+import { stringify } from 'querystring';
 
 export class ApplicationContext implements IApplicationContext {
-
-
-    
 
     public static MainViewIndex = 0;
     public static TaskListViewIndex = 1;
@@ -41,8 +39,10 @@ export class ApplicationContext implements IApplicationContext {
     public ReadTaskFile(): Array<TaskEntity> {
 
         try {
-            return fs.readFileSync("task.txt", "json");
+            var read = this.device.readTaskListFile("task.txt");
+            return read;
         } catch (error) {
+            console.log("Error reading taskfile." + error);
             return new Array<TaskEntity>();
         }
     }

@@ -68,7 +68,7 @@ describe('taskController', () => {
             target.updateLocal(newFromCompanion);
 
             //assert            
-            expect(result[0].titel).to.be.eq(newFromCompanion[0].titel);            
+            expect(result[0].titel).to.be.eq(newFromCompanion[0].titel);
         });
 
         it('has the new and the old item', () => {
@@ -76,8 +76,34 @@ describe('taskController', () => {
             target.updateLocal(newFromCompanion);
 
             //assert            
-            expect(result.length).to.be.eq(2);            
+            expect(result.length).to.be.eq(2);
         });
 
+        it('set the serverlist to the current if nothing is on the device', () => {
+            //arrange
+            oldOnDevice = new Array<TaskEntity>();
+
+            //act
+            target.updateLocal(newFromCompanion);
+
+            //assert
+            expect(result).to.be.eq(newFromCompanion);
+        });
+    });
+
+    context('loadLocal', () => {
+
+        it('loads the local task to the property', () => {
+
+            //arrange
+            oldOnDevice.push(new TaskEntity(1,"test"));
+            oldOnDevice.push(new TaskEntity(2,"test 2"));
+
+            //act
+            target.loadLocal();
+
+            //assert
+            expect(target.loadedItems).to.be.equals(oldOnDevice);
+        });
     });
 });

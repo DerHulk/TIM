@@ -37,6 +37,7 @@ export class DeviceContext implements IDeviceContext {
 
     getNextFileNameFromInbox(): string {
         var fileName = inbox.nextFile();
+        
         return fileName;
     }
 

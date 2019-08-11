@@ -124,8 +124,8 @@ export class DropboxUploadStrategy implements IUploadStrategy {
                         merge.timeInMs = corresponding.timeInMs;
                         var test = JSON.stringify(merge);
                         console.log('Merge ' +test);
-                        console.log('Merge timeInMs' + merge.timeInMs);
-                        console.log('Merge corresponding' + corresponding.timeInMs);
+                        console.log('Merge timeInMs ' + merge.timeInMs);
+                        console.log('Merge corresponding ' + corresponding.timeInMs);
                         result.push(merge);
                     }
                     else {

@@ -9,7 +9,7 @@ import { TaskMerger } from '../common/taskMerger';
 
 export class TaskController {
 
-    private  loadedItems: Array<TaskEntity>;
+    public  loadedItems: Array<TaskEntity>;
 
     constructor(private appContext: IApplicationContext) {
 
@@ -20,20 +20,25 @@ export class TaskController {
     }
 
     public loadLocal() {
-        var current = this.appContext.ReadTaskFile();
-        this.appContext.Emitter.emit(appEvent.OnTaskListChanged, current);
+        this.loadedItems = this.appContext.ReadTaskFile();        
+        this.appContext.Emitter.emit(appEvent.OnTaskListChanged, this.loadedItems);
     }
 
     public updateLocal(serverTasks: Array<TaskEntity>) {
         
         var current = this.appContext.ReadTaskFile();        
         
+        console.log("[updateLocal] " + current.length);
+
         if (current && current.length > 0){
 
             var merger = new TaskMerger();
             current = merger.Merge(serverTasks, current);
             
-        }        
+        }    
+        else {
+            current = serverTasks;
+        }    
             
         current.forEach(x=> {
             if(!x.timeInMs)
@@ -45,7 +50,7 @@ export class TaskController {
         this.loadedItems = current;         
     }
 
-    public selectByIndex(index:number){          
+    public selectByIndex(index:number){              
         this.appContext.Emitter.emit(appEvent.OnTaskSelected, this.loadedItems[index] );
     }
 }

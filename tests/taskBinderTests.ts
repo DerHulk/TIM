@@ -75,9 +75,17 @@ describe('taskBinder', () => {
             appContext.device = {
                 getNextFileNameFromInbox: () => null,
                 readTaskListFile: (fileName: string) => new Array<TaskEntity>(),
-                onNewInboxFile: (x)=> {},
+                onNewInboxFile: (x) => { },
                 enqueue: (x) => enqueuedTask = x,
-                getDocumentElementById: (x)=> { return { forEach: (a:any,b:any)=> {} }},
+                getDocumentElementById: (x) => {
+                    return {
+                        getElementsByClassName : (a:any)=> {
+                            return {
+                                forEach: (a: any, b: any) => { },
+                            }
+                        },
+                    }
+                },
                 isDisplayOn: null,
                 onClockTick: (x, y) => { },
                 onDisplayChange: (x) => { },

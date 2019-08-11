@@ -28,21 +28,24 @@ function bindTaskList(appContext: IApplicationContext, tasks: TaskEntity[]) {
 
     let myList = appContext.device.getDocumentElementById("my-list");
     myList.length = tasks.length;
-    myList.delegate = {
-        getTileInfo: (index: number) => {
-            return {
-                value: tasks[index].titel,
-                index: index,
-                type: "my-pool",
-            };
-        },
-        configureTile: function (tile: any, info: any) {
-            tile.getElementById("text").text = info.value;
-        }
-    };
+
+    if (myList.length > 0) {
+        myList.delegate = {
+            getTileInfo: (index: number) => {
+                return {
+                    value: tasks[index].titel,
+                    index: index,
+                    type: "my-pool",
+                };
+            },
+            configureTile: function (tile: any, info: any) {
+                tile.getElementById("text").text = info.value;
+            }
+        };
+    }
 }
 
-function bindItemClick(appContext: IApplicationContext, controller: TaskController) {    
+function bindItemClick(appContext: IApplicationContext, controller: TaskController) {
     let list = appContext.device.getDocumentElementById("my-list");
     let items = list.getElementsByClassName("tile-list-item");
 

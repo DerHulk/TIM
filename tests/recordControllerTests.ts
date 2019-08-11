@@ -8,10 +8,21 @@ import { TIMEOUT } from 'dns';
 import { IApplicationContext } from '../app/IApplicationContext';
 import { EventEmitter } from '../app/EventEmitter';
 import { Done } from 'mocha';
+import { IDeviceContext } from '../app/IdeviceContext';
 
 describe('RecordController', () => {
     it('throws event if finished', () => {
-        var appcontext = new ApplicationContext();
+        var device : IDeviceContext = {
+            enqueue: null,
+            getDocumentElementById: null,
+            getNextFileNameFromInbox: null,
+            isDisplayOn: null,
+            onClockTick: null,
+            onDisplayChange: null,
+            onNewInboxFile: null,
+            readTaskListFile: null,
+        };
+        var appcontext = new ApplicationContext(device);
         var target = new RecordController(appcontext);
         var task = new TaskEntity();
 
